@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { quizzesData } from '@/data/quizzesData';
 import QuizCard from '@/components/quiz/QuizCard';
 import { useProgress } from '@/context/ProgressContext';
-import { HelpCircle, Trophy, Award, Clock } from 'lucide-react';
 
 export default function QuizzesPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -37,10 +36,6 @@ export default function QuizzesPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Title */}
       <div className="space-y-2">
-        <div className="inline-flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-cyan-400">
-          <HelpCircle className="w-4 h-4" />
-          <span>Interactive Chemistry Evaluations</span>
-        </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-white">
           Chemistry Quiz Challenges
         </h1>
