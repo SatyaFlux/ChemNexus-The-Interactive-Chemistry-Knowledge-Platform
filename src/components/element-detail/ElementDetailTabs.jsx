@@ -447,3 +447,4 @@ export default function ElementDetailTabs({ element, allElements }) {
     </div>
   );
 }
+

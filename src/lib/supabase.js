@@ -160,3 +160,4 @@ export const dbService = {
 };
 
 export default supabase;
+

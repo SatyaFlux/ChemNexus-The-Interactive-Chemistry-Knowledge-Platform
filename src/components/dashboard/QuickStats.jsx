@@ -66,3 +66,4 @@ export default function QuickStats({ stats, bookmarksCount }) {
     </div>
   );
 }
+

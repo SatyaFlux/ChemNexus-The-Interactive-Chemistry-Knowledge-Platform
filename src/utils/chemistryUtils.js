@@ -142,3 +142,4 @@ export function getHeatmapColor(value, min, max, propertyType = 'electronegativi
     return `rgba(${r}, ${g}, ${b}, 0.85)`;
   }
 }
+

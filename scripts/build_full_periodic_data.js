@@ -412,3 +412,4 @@ export default elementsData;
 
 fs.writeFileSync(outputPath, fileContent, 'utf-8');
 console.log(`Wrote complete 118 elements dataset to ${outputPath}`);
+

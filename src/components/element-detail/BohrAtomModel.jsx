@@ -118,3 +118,4 @@ export default function BohrAtomModel({ element }) {
     </div>
   );
 }
+

@@ -191,3 +191,4 @@ export default function MobileElementList({ elements, viewMode = 'cards' }) {
     </div>
   );
 }
+

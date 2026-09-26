@@ -130,3 +130,4 @@ export default function RecentActivity({ recentViews, quizResults }) {
     </div>
   );
 }
+

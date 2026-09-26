@@ -215,3 +215,4 @@ export const quizzesData = [
 ];
 
 export default quizzesData;
+

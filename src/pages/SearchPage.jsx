@@ -1,6 +1,5 @@
-// src/pages/SearchPage.jsx
 import React, { useState, useEffect, useMemo } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { elementsData } from '@/data/elementsData';
 import { Search, Filter, Sparkles, ArrowRight, Bookmark } from 'lucide-react';
 import { getCategoryMeta } from '@/utils/chemistryUtils';
@@ -14,6 +13,7 @@ export default function SearchPage() {
   const [selectedBlock, setSelectedBlock] = useState('all');
   const [selectedState, setSelectedState] = useState('all');
   const { toggleBookmark, isBookmarked } = useBookmarks();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const q = searchParams.get('q');
@@ -91,6 +91,22 @@ export default function SearchPage() {
             type="text"
             value={query}
             onChange={(e) => handleQueryChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                const cleanQ = query.trim().toLowerCase();
+                const exact = elementsData.find(
+                  (el) =>
+                    el.symbol.toLowerCase() === cleanQ ||
+                    el.name.toLowerCase() === cleanQ ||
+                    el.number.toString() === cleanQ
+                );
+                if (exact) {
+                  navigate(`/element/${exact.symbol}`);
+                } else if (results.length > 0) {
+                  navigate(`/element/${results[0].symbol}`);
+                }
+              }
+            }}
             placeholder="Type any element, symbol, atomic number, mineral, or application (e.g. Titanium, Au, battery, bauxite)..."
             className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-2xl pl-12 pr-10 py-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none transition-colors"
           />
@@ -176,22 +192,22 @@ export default function SearchPage() {
               >
                 <div>
                   <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center space-x-3">
+                    <Link to={`/element/${el.symbol}`} className="flex items-center space-x-3 group/link">
                       <span
-                        className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white text-base shadow-md"
+                        className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white text-base shadow-md group-hover/link:scale-105 transition-transform"
                         style={{ backgroundColor: cat.solidBg }}
                       >
                         {el.symbol}
                       </span>
                       <div>
-                        <h4 className="text-sm font-bold text-white group-hover:text-cyan-300">
+                        <h4 className="text-sm font-bold text-white group-hover/link:text-cyan-300 transition-colors">
                           {el.name}
                         </h4>
                         <span className="text-[10px] text-slate-400 font-mono">
                           #{el.number} • {el.atomicMass} u
                         </span>
                       </div>
-                    </div>
+                    </Link>
 
                     <button
                       onClick={() => toggleBookmark(el)}
@@ -236,3 +252,4 @@ export default function SearchPage() {
     </div>
   );
 }
+
