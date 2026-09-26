@@ -14,7 +14,16 @@ export default function QuizzesPage() {
     { id: 'Periodic Trends', label: 'Periodic Trends' },
     { id: 'Fundamentals', label: 'Fundamentals' },
     { id: 'Reactions', label: 'Reactions' },
-    { id: 'Advanced Materials', label: 'Advanced Chemistry' },
+    { id: 'Organic Chemistry', label: 'Organic' },
+    { id: 'Physical Chemistry', label: 'Physical Chemistry' },
+    { id: 'Atomic Physics', label: 'Atomic Structure' },
+    { id: 'Chemical Bonding', label: 'Bonding & VSEPR' },
+    { id: 'Analytical Chemistry', label: 'Acids & Bases' },
+    { id: 'Electrochemistry', label: 'Electrochemistry' },
+    { id: 'Inorganic Chemistry', label: 'Coordination' },
+    { id: 'Environmental Chemistry', label: 'Environmental' },
+    { id: 'Biochemistry', label: 'Biochemistry' },
+    { id: 'Advanced Materials', label: 'Advanced Materials' },
   ];
 
   const filteredQuizzes = quizzesData.filter((q) => {
