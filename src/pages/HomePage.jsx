@@ -5,7 +5,6 @@ import {
   Atom,
   TableProperties,
   FlaskConical,
-  HelpCircle,
   Sparkles,
   ArrowRight,
   ArrowLeft,
@@ -142,7 +141,7 @@ export default function HomePage() {
     {
       title: 'Interactive Quizzes',
       desc: 'Challenge your knowledge with periodic trends, chemical properties, and stoichiometry questions.',
-      icon: HelpCircle,
+      image: '/images/quiz-icon.png',
       link: '/quizzes',
       color: 'from-emerald-500 to-teal-600',
     },
@@ -422,9 +421,19 @@ export default function HomePage() {
                 className="bg-slate-900/60 border border-slate-800 hover:border-cyan-500/40 rounded-3xl p-6 transition-all hover:shadow-xl hover:shadow-cyan-500/10 flex flex-col justify-between group"
               >
                 <div className="space-y-4">
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${feat.color} flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform`}>
-                    <Icon className="w-6 h-6" />
-                  </div>
+                  {feat.image ? (
+                    <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg shadow-emerald-500/10 group-hover:scale-110 transition-transform bg-slate-950 border border-slate-700/60 flex items-center justify-center">
+                      <img
+                        src={feat.image}
+                        alt={feat.title}
+                        className="w-full h-full object-cover scale-105"
+                      />
+                    </div>
+                  ) : (
+                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${feat.color} flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform`}>
+                      <Icon className="w-6 h-6" />
+                    </div>
+                  )}
                   <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">
                     {feat.title}
                   </h3>
