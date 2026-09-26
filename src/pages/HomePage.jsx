@@ -1,5 +1,5 @@
 // src/pages/HomePage.jsx
-import React, { useState } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Atom,
@@ -13,7 +13,8 @@ import {
   ShieldCheck,
   Zap,
   BookOpen,
-  Bookmark
+  Bookmark,
+  X
 } from 'lucide-react';
 import { elementsData } from '@/data/elementsData';
 import { getCategoryMeta, formatChemicalFormula } from '@/utils/chemistryUtils';
@@ -21,18 +22,111 @@ import { useBookmarks } from '@/context/BookmarkContext';
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const searchContainerRef = useRef(null);
+
   const navigate = useNavigate();
   const { toggleBookmark, isBookmarked } = useBookmarks();
 
-  // Featured Element of the Day (Cycles by day of year)
-  const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
-  const featuredIndex = dayOfYear % elementsData.length;
-  const featuredElement = elementsData[featuredIndex] || elementsData[25]; // Iron default
+  // Popular quick elements for instant access
+  const popularElements = [
+    { name: 'Hydrogen', symbol: 'H' },
+    { name: 'Iron', symbol: 'Fe' },
+    { name: 'Gold', symbol: 'Au' },
+    { name: 'Uranium', symbol: 'U' },
+    { name: 'Lithium', symbol: 'Li' },
+    { name: 'Oxygen', symbol: 'O' },
+  ];
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Compute live element suggestions
+  const filteredSuggestions = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+
+    return elementsData
+      .filter((el) => {
+        const symbolExact = el.symbol.toLowerCase() === q;
+        const symbolStarts = el.symbol.toLowerCase().startsWith(q);
+        const nameStarts = el.name.toLowerCase().startsWith(q);
+        const nameIncludes = el.name.toLowerCase().includes(q);
+        const numberMatch = el.number.toString() === q;
+        return symbolExact || symbolStarts || nameStarts || nameIncludes || numberMatch;
+      })
+      .slice(0, 8); // Top 8 matching elements
+  }, [searchQuery]);
+
+  const handleOpenElement = (symbol) => {
+    setIsOpen(false);
+    navigate(`/element/${symbol}`);
+  };
 
   const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    if (e) e.preventDefault();
+    const clean = searchQuery.trim().toLowerCase();
+    if (!clean) return;
+
+    // 1. If user navigated with keyboard arrow keys
+    if (isOpen && selectedIndex >= 0 && selectedIndex < filteredSuggestions.length) {
+      handleOpenElement(filteredSuggestions[selectedIndex].symbol);
+      return;
+    }
+
+    // 2. Direct exact symbol match (e.g. 'fe', 'au', 'o', 'h')
+    const matchSymbol = elementsData.find((el) => el.symbol.toLowerCase() === clean);
+    if (matchSymbol) {
+      handleOpenElement(matchSymbol.symbol);
+      return;
+    }
+
+    // 3. Direct atomic number match (e.g. '26', '79', '1')
+    const matchNumber = elementsData.find((el) => el.number.toString() === clean);
+    if (matchNumber) {
+      handleOpenElement(matchNumber.symbol);
+      return;
+    }
+
+    // 4. Exact element name match (e.g. 'iron', 'gold')
+    const matchName = elementsData.find((el) => el.name.toLowerCase() === clean);
+    if (matchName) {
+      handleOpenElement(matchName.symbol);
+      return;
+    }
+
+    // 5. If there is at least one suggestion in the list, open the top one
+    if (filteredSuggestions.length > 0) {
+      handleOpenElement(filteredSuggestions[0].symbol);
+      return;
+    }
+
+    // 6. Otherwise navigate to full search page for compounds/reactions
+    setIsOpen(false);
+    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (!isOpen && filteredSuggestions.length > 0) {
+        setIsOpen(true);
+      }
+      setSelectedIndex((prev) => (prev < filteredSuggestions.length - 1 ? prev + 1 : 0));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : filteredSuggestions.length - 1));
+    } else if (e.key === 'Escape') {
+      setIsOpen(false);
     }
   };
 
@@ -112,34 +206,133 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Hero Quick Search Bar */}
-        <div className="max-w-xl mx-auto px-4 pt-2">
+        {/* Hero Quick Search Bar with Live Autocomplete */}
+        <div ref={searchContainerRef} className="max-w-xl mx-auto px-4 pt-2 relative">
           <form onSubmit={handleSearchSubmit} className="relative flex items-center shadow-2xl">
-            <Search className="w-5 h-5 text-slate-400 absolute left-4 pointer-events-none" />
+            <Search className="w-5 h-5 text-cyan-400 absolute left-4 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => {
+                if (searchQuery.trim()) setIsOpen(true);
+              }}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setIsOpen(true);
+                setSelectedIndex(-1);
+              }}
+              onKeyDown={handleKeyDown}
               placeholder="Search by element name, symbol, number, or compound (e.g. Iron, Fe, 26)..."
-              className="w-full bg-slate-900/90 border border-slate-700/80 focus:border-cyan-400 rounded-2xl pl-12 pr-28 py-3.5 text-sm text-slate-100 placeholder-slate-400 focus:outline-none transition-all shadow-inner"
+              className="w-full bg-slate-900/90 border border-slate-700/80 focus:border-cyan-400 rounded-2xl pl-12 pr-32 py-3.5 text-sm text-slate-100 placeholder-slate-400 focus:outline-none transition-all shadow-inner focus:ring-2 focus:ring-cyan-500/20"
             />
+
+            {/* Clear Input Button */}
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('');
+                  setIsOpen(false);
+                }}
+                className="absolute right-24 p-1 text-slate-400 hover:text-white transition-colors"
+                title="Clear query"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+
             <button
               type="submit"
-              className="absolute right-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-xs rounded-xl shadow-md transition-all"
+              className="absolute right-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-xs rounded-xl shadow-md transition-all cursor-pointer"
             >
               Search
             </button>
           </form>
-          {/* Quick suggestions */}
-          <div className="flex items-center justify-center space-x-2 mt-3 text-xs text-slate-400">
-            <span>Popular:</span>
-            {['Hydrogen', 'Iron', 'Gold', 'Uranium', 'Lithium'].map((name) => (
+
+          {/* Live Autocomplete Element Dropdown */}
+          {isOpen && searchQuery.trim() && (
+            <div className="absolute top-full left-4 right-4 mt-2 bg-slate-900/95 backdrop-blur-xl border border-slate-700/90 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in duration-150 divide-y divide-slate-800/80">
+              <div className="px-4 py-2 bg-slate-950/80 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                <span>Matching Elements ({filteredSuggestions.length})</span>
+                <span className="text-slate-500">Click or press Enter to open</span>
+              </div>
+
+              {filteredSuggestions.length > 0 ? (
+                <div className="max-h-72 overflow-y-auto divide-y divide-slate-800/50">
+                  {filteredSuggestions.map((el, index) => {
+                    const cat = getCategoryMeta(el.category);
+                    const isHighlighted = selectedIndex === index;
+
+                    return (
+                      <div
+                        key={el.symbol}
+                        onClick={() => handleOpenElement(el.symbol)}
+                        onMouseEnter={() => setSelectedIndex(index)}
+                        className={`px-4 py-3 flex items-center justify-between cursor-pointer transition-colors ${
+                          isHighlighted ? 'bg-cyan-500/15 text-white' : 'hover:bg-slate-800/60 text-slate-200'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <span
+                            className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-white text-sm shadow-md shrink-0"
+                            style={{ backgroundColor: cat.solidBg }}
+                          >
+                            {el.symbol}
+                          </span>
+                          <div className="text-left">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-bold text-sm text-white">
+                                {el.name}
+                              </span>
+                              <span className="text-xs text-slate-400 font-mono">
+                                #{el.number}
+                              </span>
+                            </div>
+                            <span className="text-[11px] text-slate-400">
+                              Mass: {el.atomicMass} u • {cat.name}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2 text-cyan-400 text-xs font-medium">
+                          <span className="hidden sm:inline">Open Profile</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="p-4 text-center text-xs text-slate-400">
+                  No direct element matching "{searchQuery}".
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                    }}
+                    className="block mx-auto mt-2 text-cyan-400 hover:underline font-medium"
+                  >
+                    Search across reactions, minerals, and compounds &rarr;
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Quick suggestions - Directly Opens Element */}
+          <div className="flex items-center justify-center space-x-2 mt-3 text-xs text-slate-400 flex-wrap gap-y-1">
+            <span className="text-slate-500 font-medium">Quick Open:</span>
+            {popularElements.map((item) => (
               <button
-                key={name}
-                onClick={() => navigate(`/search?q=${name}`)}
-                className="hover:text-cyan-400 underline underline-offset-2 transition-colors"
+                key={item.symbol}
+                type="button"
+                onClick={() => handleOpenElement(item.symbol)}
+                className="px-2.5 py-0.5 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-cyan-300 border border-slate-800/80 hover:border-cyan-500/40 transition-colors flex items-center space-x-1 cursor-pointer"
+                title={`Open ${item.name} (${item.symbol})`}
               >
-                {name}
+                <span className="font-mono font-bold text-cyan-400">{item.symbol}</span>
+                <span>{item.name}</span>
               </button>
             ))}
           </div>
