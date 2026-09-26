@@ -17,6 +17,10 @@ export default function ReactionsPage() {
     { id: 'Decomposition', label: 'Decomposition' },
     { id: 'Redox', label: 'Redox & Electrochemistry' },
     { id: 'Neutralization', label: 'Acid-Base Neutralization' },
+    { id: 'Precipitation', label: 'Precipitation' },
+    { id: 'Disproportionation', label: 'Disproportionation' },
+    { id: 'Electrochemical', label: 'Electrochemical & Batteries' },
+    { id: 'Hydrolysis', label: 'Hydrolysis & Saponification' },
   ];
 
   const filteredReactions = useMemo(() => {
