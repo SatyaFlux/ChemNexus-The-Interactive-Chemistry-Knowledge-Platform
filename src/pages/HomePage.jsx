@@ -8,6 +8,7 @@ import {
   HelpCircle,
   Sparkles,
   ArrowRight,
+  ArrowLeft,
   Search,
   ShieldCheck,
   Zap,
@@ -67,9 +68,28 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="space-y-20 pb-16">
+    <div className="space-y-12 sm:space-y-16 pb-16">
+      {/* Top Back Page Navigation Button */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
+        <button
+          onClick={() => {
+            if (window.history.length > 1) {
+              navigate(-1);
+            } else {
+              window.history.back();
+            }
+          }}
+          className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 hover:border-cyan-500/50 text-xs sm:text-sm font-medium shadow-md hover:shadow-cyan-500/10 transition-all group cursor-pointer"
+          title="Go to back page"
+          aria-label="Go to back page"
+        >
+          <ArrowLeft className="w-4 h-4 text-cyan-400 group-hover:-translate-x-1 transition-transform" />
+          <span>Go to Back Page</span>
+        </button>
+      </div>
+
       {/* HERO SECTION */}
-      <section className="relative pt-12 sm:pt-20 text-center space-y-6">
+      <section className="relative pt-6 sm:pt-10 text-center space-y-6">
         {/* Glow backdrop */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
@@ -262,3 +282,4 @@ export default function HomePage() {
     </div>
   );
 }
+

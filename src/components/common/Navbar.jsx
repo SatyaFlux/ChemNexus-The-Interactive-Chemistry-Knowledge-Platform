@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import {
   Atom,
+  ArrowLeft,
   TableProperties,
   FlaskConical,
   Sparkles,
@@ -44,20 +45,38 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 bg-[#0a0f1d]/90 backdrop-blur-md border-b border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Brand Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
-              <Atom className="w-6 h-6 text-white animate-spin-slow" />
-            </div>
-            <div>
-              <span className="text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
-                Chem<span className="text-cyan-400">Nexus</span>
-              </span>
-              <span className="hidden sm:block text-[10px] text-slate-400 tracking-wider uppercase font-medium">
-                Chemistry Knowledge Platform
-              </span>
-            </div>
-          </Link>
+          {/* Brand Logo & Back Action */}
+          <div className="flex items-center space-x-2.5">
+            <button
+              onClick={() => {
+                if (window.history.length > 1) {
+                  navigate(-1);
+                } else {
+                  window.history.back();
+                }
+              }}
+              className="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-cyan-400 border border-slate-800 hover:border-cyan-500/40 transition-all flex items-center space-x-1 text-xs font-medium cursor-pointer"
+              title="Go to back page"
+              aria-label="Go to back page"
+            >
+              <ArrowLeft className="w-4 h-4 text-cyan-400" />
+              <span className="hidden sm:inline">Back</span>
+            </button>
+
+            <Link to="/" className="flex items-center space-x-3 group">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
+                <Atom className="w-6 h-6 text-white animate-spin-slow" />
+              </div>
+              <div>
+                <span className="text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
+                  Chem<span className="text-cyan-400">Nexus</span>
+                </span>
+                <span className="hidden sm:block text-[10px] text-slate-400 tracking-wider uppercase font-medium">
+                  Chemistry Knowledge Platform
+                </span>
+              </div>
+            </Link>
+          </div>
 
           {/* Desktop Navigation Links */}
           <div className="hidden lg:flex items-center space-x-1">
@@ -286,3 +305,4 @@ export default function Navbar() {
     </nav>
   );
 }
+
