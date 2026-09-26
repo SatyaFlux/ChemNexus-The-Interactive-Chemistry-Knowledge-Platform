@@ -10,6 +10,7 @@ export default function ReactionsPage() {
 
   const reactionTypes = [
     { id: 'all', label: 'All Reaction Types' },
+    { id: 'Combustion / Synthesis', label: 'Combustion & Synthesis' },
     { id: 'Synthesis', label: 'Synthesis / Combination' },
     { id: 'Combustion', label: 'Combustion' },
     { id: 'Single Displacement', label: 'Single Displacement' },
@@ -40,7 +41,12 @@ export default function ReactionsPage() {
 
       // Type filter
       if (selectedType !== 'all') {
-        if (!rx.type.toLowerCase().includes(selectedType.toLowerCase())) {
+        const typeLower = rx.type.toLowerCase();
+        if (selectedType === 'Combustion / Synthesis') {
+          if (!typeLower.includes('combustion') && !typeLower.includes('synthesis')) {
+            return false;
+          }
+        } else if (!typeLower.includes(selectedType.toLowerCase())) {
           return false;
         }
       }
