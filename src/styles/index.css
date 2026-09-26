@@ -4,36 +4,38 @@
 
 @layer base {
   :root {
-    --color-bg: #0a0f1d;
-    --color-surface: #111827;
-    --color-border: #1f293d;
+    --color-bg: #f1f5f9;
+    --color-surface: #ffffff;
+    --color-border: #e2e8f0;
+    --color-text-main: #0f172a;
+    --color-text-muted: #64748b;
   }
 
   body {
-    background-color: #0a0f1d;
-    color: #f1f5f9;
+    background-color: #f1f5f9;
+    color: #1e293b;
     font-family: 'Inter', system-ui, sans-serif;
     overflow-x: hidden;
   }
 }
 
-/* Custom subtle scrollbars for sleek desktop UI */
+/* Custom subtle scrollbars for sleek Gray-white UI */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0f1d;
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #94a3b8;
 }
 
 /* Periodic table 18-column grid */
@@ -50,23 +52,201 @@
   }
 }
 
-/* Science Glow & Glassmorphism helpers */
+/* Science Glow & Glassmorphism helpers for Gray-white theme */
 .glass-panel {
-  background: rgba(17, 24, 39, 0.75);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.9);
 }
 
 .glow-cyan {
-  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.35);
+  box-shadow: 0 4px 20px -2px rgba(6, 182, 212, 0.2);
 }
 
 .glow-blue {
-  box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.35);
+  box-shadow: 0 4px 20px -2px rgba(59, 130, 246, 0.2);
 }
 
 .glow-purple {
-  box-shadow: 0 0 25px -5px rgba(147, 51, 234, 0.35);
+  box-shadow: 0 4px 20px -2px rgba(147, 51, 234, 0.2);
 }
 
+/* =========================================================================
+   CHEMNEXUS GRAY-WHITE WEBSITE THEME OVERRIDES
+   ========================================================================= */
+
+/* Root, Body and full-page wrappers */
+html,
+body,
+#root,
+.bg-\[\#0a0f1d\],
+.bg-\[\#0a0f1d\]\/90 {
+  background-color: #f1f5f9 !important;
+}
+
+/* Primary Cards, Modals, Sections to Crisp White */
+.bg-slate-900,
+.bg-slate-900\/60,
+.bg-slate-900\/70,
+.bg-slate-900\/80,
+.bg-slate-900\/90 {
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* Inner panels, Recessed backgrounds, Input containers */
+.bg-slate-950,
+.bg-slate-950\/40,
+.bg-slate-950\/60,
+.bg-slate-950\/80,
+.bg-slate-950\/90 {
+  background-color: #f8fafc !important;
+}
+
+/* Sticky Navbar */
+nav.bg-\[\#0a0f1d\]\/90,
+nav {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Footer */
+footer.bg-slate-950,
+footer {
+  background-color: #e2e8f0 !important;
+  border-top: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+/* Light Borders across all cards and sections */
+.border-slate-800,
+.border-slate-800\/80,
+.border-slate-800\/60,
+.border-slate-900,
+.border-slate-900\/80 {
+  border-color: #e2e8f0 !important;
+}
+
+.border-slate-700,
+.border-slate-700\/60 {
+  border-color: #cbd5e1 !important;
+}
+
+/* Headings Typography */
+h1, h2, h3, h4, h5, h6 {
+  color: #0f172a !important;
+}
+
+/* General Text Overrides */
+.text-white {
+  color: #0f172a;
+}
+
+/* Preserve bright white text for colored gradient buttons & solid badges */
+button[class*="from-"],
+button[class*="bg-cyan-"],
+button[class*="bg-blue-"],
+button[class*="bg-gradient-"],
+a[class*="from-"],
+a[class*="bg-cyan-"],
+a[class*="bg-blue-"],
+a[class*="bg-gradient-"],
+button.bg-gradient-to-r,
+a.bg-gradient-to-r,
+span.bg-cyan-500,
+span.bg-blue-600,
+[class*="from-cyan-"] .text-white,
+[class*="from-blue-"] .text-white,
+[class*="from-emerald-"] .text-white,
+[class*="from-purple-"] .text-white,
+[class*="from-rose-"] .text-white,
+button[class*="from-"] span,
+a[class*="from-"] span,
+button[class*="bg-cyan-"] span,
+a[class*="bg-cyan-"] span,
+button.from-cyan-500,
+a.from-cyan-500 {
+  color: #ffffff !important;
+}
+
+/* Text tones */
+.text-slate-100 {
+  color: #0f172a !important;
+}
+
+.text-slate-200 {
+  color: #1e293b !important;
+}
+
+.text-slate-300 {
+  color: #334155 !important;
+}
+
+.text-slate-400 {
+  color: #64748b !important;
+}
+
+.text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Hover States on light cards */
+.hover\:bg-slate-800:hover,
+.hover\:bg-slate-800\/60:hover,
+.hover\:bg-slate-800\/80:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.hover\:border-cyan-500\/40:hover,
+.hover\:border-cyan-500\/50:hover,
+.hover\:border-cyan-400:hover {
+  border-color: #06b6d4 !important;
+}
+
+/* Periodic table element cells on Gray-white */
+.periodic-grid a {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.periodic-grid a span.text-white {
+  color: #0f172a !important;
+  text-shadow: none !important;
+}
+
+.periodic-grid a span.text-slate-300 {
+  color: #334155 !important;
+}
+
+.periodic-grid a:hover span.text-white,
+.periodic-grid a:hover span.group-hover\:text-cyan-200 {
+  color: #0891b2 !important;
+}
+
+/* Inputs & Form Controls */
+input,
+select,
+textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #06b6d4 !important;
+  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2) !important;
+}
+
+/* Quiz Review & Options */
+.ring-offset-slate-950 {
+  --tw-ring-offset-color: #f1f5f9 !important;
+}
