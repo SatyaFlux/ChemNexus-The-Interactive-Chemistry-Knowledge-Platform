@@ -201,7 +201,7 @@ To connect a Supabase project:
 
 ## ☁️ Vercel Deployment Instructions
 
-ChemNexus is specifically engineered for simple, error-free deployment to **Vercel**:
+ChemNexus   is specifically engineered for simple, error-free deployment to **Vercel**:
 
 ### Method 1: Deploy via GitHub (Recommended)
 1. Push this project to your GitHub repository:
@@ -247,5 +247,6 @@ ChemNexus is specifically engineered for simple, error-free deployment to **Verc
 * **Thermodynamic Data:** CRC Handbook of Chemistry and Physics (104th Edition)
 * **Safety Classifications:** Globally Harmonized System of Classification and Labelling of Chemicals (GHS)
 
-#   C h e m N e x u s - T h e - I n t e r a c t i v e - C h e m i s t r y - K n o w l e d g e - P l a t f o r m  
+#   C h e m N e x u s - T h e - I n t e r a c t i v e - C h e m i s t r y - K n o w l e d g e - P l a t f o r m 
+ 
  
