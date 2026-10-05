@@ -81,7 +81,7 @@ export function AuthProvider({ children }) {
       setUser(guestUser);
       setProfile({ full_name: guestUser.name, study_level: 'Undergraduate' });
       setIsGuest(true);
-      return { user: guestUser, error: null };
+      return { user: guestUser, session: { user: guestUser }, requiresEmailConfirmation: false, error: null };
     }
 
     const { data, error } = await supabase.auth.signUp({
@@ -93,10 +93,26 @@ export function AuthProvider({ children }) {
     });
 
     if (error) throw error;
-    if (data.user) {
-      await dbService.updateProfile(data.user.id, { full_name: fullName, email });
+
+    // Detect if user already exists (Supabase returns user with empty identities when email confirmation is active)
+    if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      throw new Error('An account with this email address already exists. Please sign in instead.');
     }
-    return data;
+
+    // If an immediate session is returned (email confirmation disabled in Supabase), sync profile
+    if (data.user && data.session) {
+      try {
+        await dbService.updateProfile(data.user.id, { full_name: fullName, email });
+      } catch (err) {
+        console.warn('Profile database sync notice (run supabase/schema.sql in Supabase SQL Editor if tables not created):', err);
+      }
+    }
+
+    const requiresEmailConfirmation = Boolean(data.user && !data.session);
+    return {
+      ...data,
+      requiresEmailConfirmation
+    };
   };
 
   const signIn = async (email, password) => {

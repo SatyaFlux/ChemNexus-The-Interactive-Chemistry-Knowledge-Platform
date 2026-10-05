@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { Atom, UserPlus, Lock, Mail, User, AlertCircle, Sparkles, GraduationCap } from 'lucide-react';
+import { Atom, UserPlus, Lock, Mail, User, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react';
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState('');
@@ -10,6 +10,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [confirmationSent, setConfirmationSent] = useState(false);
 
   const { signUp, continueAsGuest } = useAuth();
   const navigate = useNavigate();
@@ -25,11 +26,19 @@ export default function SignupPage() {
 
     setLoading(true);
     try {
-      await signUp(email, password, fullName);
-      navigate('/dashboard', { replace: true });
+      const result = await signUp(email, password, fullName);
+      if (result?.requiresEmailConfirmation) {
+        setConfirmationSent(true);
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
     } catch (err) {
       console.error('Sign up error:', err);
-      setError(err.message || 'Failed to create account. Please check your details.');
+      let msg = err.message || 'Failed to create account. Please check your details.';
+      if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists')) {
+        msg = 'An account with this email address already exists. Please sign in instead.';
+      }
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -64,8 +73,31 @@ export default function SignupPage() {
           </div>
         )}
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Email Confirmation Screen */}
+        {confirmationSent ? (
+          <div className="space-y-6 text-center py-4 animate-in fade-in">
+            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400 shadow-lg shadow-emerald-500/10">
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-white">Confirmation Link Sent!</h3>
+              <p className="text-xs text-slate-300 leading-relaxed max-w-sm mx-auto">
+                We've sent an account activation email to <strong className="text-cyan-400 font-semibold">{email}</strong>. Please check your inbox and click the verification link to log in.
+              </p>
+            </div>
+            <div className="pt-2">
+              <Link
+                to="/login"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-xs flex items-center justify-center space-x-2 shadow-lg shadow-cyan-500/20 transition-all cursor-pointer"
+              >
+                <span>Proceed to Sign In</span>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-xs font-medium text-slate-300 block mb-1.5">
               Full Name
@@ -150,6 +182,8 @@ export default function SignupPage() {
           <Sparkles className="w-4 h-4 text-cyan-400" />
           <span>Continue as Guest Demo Scholar</span>
         </button>
+        </>
+        )}
 
         {/* Footer Link */}
         <p className="text-center text-xs text-slate-400">

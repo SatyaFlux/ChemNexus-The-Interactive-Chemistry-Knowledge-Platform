@@ -26,7 +26,13 @@ export default function LoginPage() {
       navigate(redirectPath, { replace: true });
     } catch (err) {
       console.error('Sign in error:', err);
-      setError(err.message || 'Failed to sign in. Please verify your credentials.');
+      let msg = err.message || 'Failed to sign in. Please verify your credentials.';
+      if (msg.toLowerCase().includes('invalid login credentials')) {
+        msg = 'Invalid email or password. Please check your credentials or create a new account.';
+      } else if (msg.toLowerCase().includes('email not confirmed')) {
+        msg = 'Your email address has not been confirmed yet. Please check your inbox for the verification link.';
+      }
+      setError(msg);
     } finally {
       setLoading(false);
     }
