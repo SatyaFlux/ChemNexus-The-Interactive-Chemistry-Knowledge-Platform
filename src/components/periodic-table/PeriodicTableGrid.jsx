@@ -4,7 +4,7 @@ import ElementCell from './ElementCell';
 import { elementsData } from '@/data/elementsData';
 import { getCategoryMeta } from '@/utils/chemistryUtils';
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowRight, Bookmark } from 'lucide-react';
+import { Sparkles, ArrowRight, Bookmark, X } from 'lucide-react';
 import { useBookmarks } from '@/context/BookmarkContext';
 
 export default function PeriodicTableGrid({
@@ -225,17 +225,12 @@ export default function PeriodicTableGrid({
               </div>
             </div>
             <button
-              onClick={() => toggleBookmark(hoveredElement)}
-              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
-              title="Toggle Bookmark"
+              onClick={() => setHoveredElement(null)}
+              className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              title="Close card"
+              aria-label="Close card"
             >
-              <Bookmark
-                className={`w-4 h-4 ${
-                  isBookmarked(hoveredElement.symbol)
-                    ? 'text-amber-400 fill-amber-400'
-                    : 'text-slate-400'
-                }`}
-              />
+              <X className="w-4 h-4" />
             </button>
           </div>
 
@@ -271,13 +266,29 @@ export default function PeriodicTableGrid({
             {hoveredElement.summary}
           </p>
 
-          <Link
-            to={`/element/${hoveredElement.symbol}`}
-            className="w-full py-2 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium text-xs flex items-center justify-center space-x-1.5 shadow-md shadow-cyan-500/20 transition-all"
-          >
-            <span>Explore Full Element Profile</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+          <div className="flex items-center space-x-2">
+            <Link
+              to={`/element/${hoveredElement.symbol}`}
+              className="flex-1 py-2 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium text-xs flex items-center justify-center space-x-1.5 shadow-md shadow-cyan-500/20 transition-all"
+            >
+              <span>Explore Full Element Profile</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <button
+              onClick={() => toggleBookmark(hoveredElement)}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+              title="Toggle Bookmark"
+              aria-label="Toggle Bookmark"
+            >
+              <Bookmark
+                className={`w-4 h-4 ${
+                  isBookmarked(hoveredElement.symbol)
+                    ? 'text-amber-400 fill-amber-400'
+                    : 'text-slate-400'
+                }`}
+              />
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -315,14 +315,30 @@ export default function PeriodicTable3D({
     updateCardsAppearance();
   }, [updateCardsAppearance]);
 
+  // Responsive camera distance calculator
+  const getResponsiveCameraZ = (w, h) => {
+    const aspect = w / h;
+    const contentWidth = 3200;
+    const contentHeight = 2200;
+    const vFovRad = THREE.MathUtils.degToRad(48);
+    const distForHeight = (contentHeight / 2) / Math.tan(vFovRad / 2);
+    const distForWidth = (contentWidth / 2) / (Math.tan(vFovRad / 2) * aspect);
+    const idealZ = Math.max(distForWidth, distForHeight, 2300);
+    return Math.min(idealZ, 7500);
+  };
+
   // Reset Camera View
   const handleResetCamera = () => {
     const s = threeRef.current;
     if (!s.camera || !s.controls) return;
+    const container = containerRef.current;
+    const w = container?.clientWidth || window.innerWidth;
+    const h = container?.clientHeight || 750;
+    const targetZ = getResponsiveCameraZ(w, h);
 
     // Reset controls
     s.controls.reset();
-    s.camera.position.set(0, 0, 2400);
+    s.camera.position.set(0, 0, targetZ);
     s.camera.up.set(0, 1, 0);
     s.controls.target.set(0, 0, 0);
 
@@ -361,9 +377,10 @@ export default function PeriodicTable3D({
     const rootGroup = new THREE.Group();
     scene.add(rootGroup);
 
-    // 2. Camera
-    const camera = new THREE.PerspectiveCamera(48, width / height, 1, 10000);
-    camera.position.set(0, 0, 2400);
+    // 2. Camera with responsive distance
+    const camera = new THREE.PerspectiveCamera(48, width / height, 1, 15000);
+    const initialZ = getResponsiveCameraZ(width, height);
+    camera.position.set(0, 0, initialZ);
 
     // 3. CSS3D Renderer
     const renderer = new CSS3DRenderer();
@@ -374,13 +391,14 @@ export default function PeriodicTable3D({
     renderer.domElement.style.width = '100%';
     renderer.domElement.style.height = '100%';
     renderer.domElement.style.overflow = 'hidden';
+    renderer.domElement.style.touchAction = 'none'; // Essential for mobile touchscreen control
     container.appendChild(renderer.domElement);
 
     // 4. Controls
     const controls = new TrackballControls(camera, renderer.domElement);
-    controls.minDistance = 400;
-    controls.maxDistance = 5500;
-    controls.rotateSpeed = 1.1;
+    controls.minDistance = 350;
+    controls.maxDistance = 9500;
+    controls.rotateSpeed = width < 640 ? 0.9 : 1.1;
     controls.zoomSpeed = 1.2;
     controls.panSpeed = 0.8;
     controls.noZoom = false;
@@ -717,22 +735,22 @@ export default function PeriodicTable3D({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full overflow-hidden bg-gradient-to-b from-[#0a0f1d] via-[#090d1a] to-[#040711] border border-slate-800 rounded-3xl select-none ${
-        isFullscreen ? 'fixed inset-0 z-50 rounded-none border-none' : 'h-[750px] sm:h-[820px] shadow-2xl'
+      className={`relative w-full overflow-hidden bg-gradient-to-b from-[#0a0f1d] via-[#090d1a] to-[#040711] border border-slate-800 rounded-2xl sm:rounded-3xl select-none ${
+        isFullscreen ? 'fixed inset-0 z-50 rounded-none border-none' : 'h-[78vh] min-h-[500px] max-h-[860px] sm:h-[820px] shadow-2xl'
       }`}
     >
       {/* 3D Background Grid Glow */}
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(14,165,233,0.15),rgba(255,255,255,0))]" />
 
       {/* TOP FLOATING HUD CONTROLS BAR */}
-      <div className="absolute top-3 left-3 right-3 z-20 flex flex-wrap items-center justify-between gap-2 p-2 sm:p-2.5 rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 shadow-xl">
+      <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 z-20 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-1.5 sm:gap-2 p-1.5 sm:p-2.5 rounded-2xl bg-slate-900/85 backdrop-blur-md border border-slate-800/80 shadow-xl">
         {/* Left: 3D Layout Geometry Buttons */}
-        <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto py-0.5">
+        <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto py-0.5 scrollbar-none w-full sm:w-auto">
           <button
             onClick={() => setLayoutMode('table')}
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all ${
+            className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold flex items-center space-x-1 sm:space-x-1.5 transition-all whitespace-nowrap flex-shrink-0 ${
               layoutMode === 'table'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30'
+                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30 font-bold'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
             title="Standard 18-Column Periodic Table"
@@ -743,9 +761,9 @@ export default function PeriodicTable3D({
 
           <button
             onClick={() => setLayoutMode('sphere')}
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all ${
+            className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold flex items-center space-x-1 sm:space-x-1.5 transition-all whitespace-nowrap flex-shrink-0 ${
               layoutMode === 'sphere'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30'
+                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30 font-bold'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
             title="3D Spherical Globe"
@@ -756,9 +774,9 @@ export default function PeriodicTable3D({
 
           <button
             onClick={() => setLayoutMode('helix')}
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all ${
+            className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold flex items-center space-x-1 sm:space-x-1.5 transition-all whitespace-nowrap flex-shrink-0 ${
               layoutMode === 'helix'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30'
+                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30 font-bold'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
             title="3D Spiral Helix"
@@ -769,9 +787,9 @@ export default function PeriodicTable3D({
 
           <button
             onClick={() => setLayoutMode('grid')}
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all ${
+            className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold flex items-center space-x-1 sm:space-x-1.5 transition-all whitespace-nowrap flex-shrink-0 ${
               layoutMode === 'grid'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30'
+                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30 font-bold'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
             title="3D Cubic Matrix"
@@ -782,9 +800,9 @@ export default function PeriodicTable3D({
 
           <button
             onClick={() => setLayoutMode('cylinder')}
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all ${
+            className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold flex items-center space-x-1 sm:space-x-1.5 transition-all whitespace-nowrap flex-shrink-0 ${
               layoutMode === 'cylinder'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30'
+                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30 font-bold'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
             title="Wrapping 3D Cylinder"
@@ -795,77 +813,79 @@ export default function PeriodicTable3D({
         </div>
 
         {/* Right: Camera & Scene Actions */}
-        <div className="flex items-center gap-1.5 ml-auto">
+        <div className="flex items-center justify-between sm:justify-end gap-1 sm:gap-1.5 w-full sm:w-auto pt-1 sm:pt-0 border-t border-slate-800/60 sm:border-t-0">
           {/* Active elements badge */}
-          <div className="hidden md:flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-slate-950/70 border border-slate-800 text-[11px] font-mono text-cyan-300">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-            <span>{visibleCount} / 118 in 3D</span>
+          <div className="flex items-center space-x-1 sm:space-x-1.5 px-2 py-1 rounded-xl bg-slate-950/70 border border-slate-800 text-[10px] sm:text-[11px] font-mono text-cyan-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <span>{visibleCount} in 3D</span>
           </div>
 
-          {/* Filter toggle button */}
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1 border transition-all ${
-              showFilters || activeCategory !== 'all' || activeBlock !== 'all' || activeState !== 'all' || searchTerm
-                ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/40'
-                : 'bg-slate-950/70 text-slate-400 border-slate-800 hover:text-white'
-            }`}
-            title="Toggle Filters"
-          >
-            <Filter className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden sm:inline">Filters</span>
-          </button>
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            {/* Filter toggle button */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1 border transition-all ${
+                showFilters || activeCategory !== 'all' || activeBlock !== 'all' || activeState !== 'all' || searchTerm
+                  ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/40'
+                  : 'bg-slate-950/70 text-slate-400 border-slate-800 hover:text-white'
+              }`}
+              title="Toggle Filters"
+            >
+              <Filter className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="hidden md:inline">Filters</span>
+            </button>
 
-          {/* Auto-Rotate toggle */}
-          <button
-            onClick={() => setAutoRotate(!autoRotate)}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1 border transition-all ${
-              autoRotate
-                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40'
-                : 'bg-slate-950/70 text-slate-400 border-slate-800 hover:text-white'
-            }`}
-            title={autoRotate ? 'Pause Auto-Rotation' : 'Resume Auto-Rotation'}
-          >
-            {autoRotate ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{autoRotate ? 'Orbit On' : 'Orbit Off'}</span>
-          </button>
+            {/* Auto-Rotate toggle */}
+            <button
+              onClick={() => setAutoRotate(!autoRotate)}
+              className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1 border transition-all ${
+                autoRotate
+                  ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40'
+                  : 'bg-slate-950/70 text-slate-400 border-slate-800 hover:text-white'
+              }`}
+              title={autoRotate ? 'Pause Auto-Rotation' : 'Resume Auto-Rotation'}
+            >
+              {autoRotate ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+              <span className="hidden md:inline">{autoRotate ? 'Orbit On' : 'Orbit Off'}</span>
+            </button>
 
-          {/* Reset Camera */}
-          <button
-            onClick={handleResetCamera}
-            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1 bg-slate-950/70 text-slate-300 border border-slate-800 hover:text-cyan-400 hover:border-cyan-500/40 transition-all"
-            title="Reset Camera Angle & Distance"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Reset</span>
-          </button>
+            {/* Reset Camera */}
+            <button
+              onClick={handleResetCamera}
+              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1 bg-slate-950/70 text-slate-300 border border-slate-800 hover:text-cyan-400 hover:border-cyan-500/40 transition-all"
+              title="Reset Camera Angle & Distance"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Reset</span>
+            </button>
 
-          {/* Help Tooltip */}
-          <button
-            onClick={() => setShowHelp(!showHelp)}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-white bg-slate-950/70 border border-slate-800 transition-all"
-            title="3D Navigation Controls Help"
-          >
-            <HelpCircle className="w-3.5 h-3.5" />
-          </button>
+            {/* Help Tooltip */}
+            <button
+              onClick={() => setShowHelp(!showHelp)}
+              className="p-1.5 rounded-xl text-slate-400 hover:text-white bg-slate-950/70 border border-slate-800 transition-all"
+              title="3D Navigation Controls Help"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+            </button>
 
-          {/* Fullscreen Button */}
-          <button
-            onClick={toggleFullscreen}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-white bg-slate-950/70 border border-slate-800 transition-all"
-            title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen 3D Mode'}
-          >
-            {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-          </button>
+            {/* Fullscreen Button */}
+            <button
+              onClick={toggleFullscreen}
+              className="p-1.5 rounded-xl text-slate-400 hover:text-white bg-slate-950/70 border border-slate-800 transition-all"
+              title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen 3D Mode'}
+            >
+              {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* EXPANDABLE FILTER DRAWER OVERLAY */}
       {showFilters && (
-        <div className="absolute top-16 left-3 right-3 z-20 p-4 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 shadow-2xl space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        <div className="absolute top-20 sm:top-16 left-2 sm:left-3 right-2 sm:right-3 z-20 p-3 sm:p-4 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-slate-800 shadow-2xl space-y-2.5 sm:space-y-3 max-h-[72vh] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:items-center gap-2.5">
             {/* Search Input */}
-            <div className="relative flex-1">
+            <div className="relative w-full lg:flex-1">
               <Search className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
               <input
                 type="text"
@@ -885,9 +905,11 @@ export default function PeriodicTable3D({
             </div>
 
             {/* Heatmap Metric Selector */}
-            <div className="flex items-center space-x-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs">
-              <Zap className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="text-slate-400">Heatmap:</span>
+            <div className="flex items-center justify-between sm:justify-start space-x-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs">
+              <div className="flex items-center space-x-1.5 text-slate-400">
+                <Zap className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Heatmap:</span>
+              </div>
               <select
                 value={heatmapMode}
                 onChange={(e) => setHeatmapMode(e.target.value)}
@@ -902,7 +924,7 @@ export default function PeriodicTable3D({
             </div>
 
             {/* Block Filter */}
-            <div className="flex items-center space-x-1 bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs font-semibold">
+            <div className="flex items-center justify-between sm:justify-start space-x-1 bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs font-semibold">
               <span className="px-2 text-slate-400 font-normal">Block:</span>
               {['all', 's', 'p', 'd', 'f'].map((b) => (
                 <button
@@ -920,7 +942,7 @@ export default function PeriodicTable3D({
             </div>
 
             {/* State Filter */}
-            <div className="flex items-center space-x-1 bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs font-semibold">
+            <div className="flex items-center justify-between sm:justify-start space-x-1 bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs font-semibold">
               <span className="px-2 text-slate-400 font-normal">State:</span>
               {['all', 'Solid', 'Liquid', 'Gas'].map((s) => (
                 <button
@@ -994,44 +1016,47 @@ export default function PeriodicTable3D({
       <button
         type="button"
         onClick={() => setShowElementBrowser(true)}
-        className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center space-x-2 px-4 py-2 rounded-full bg-slate-900/90 hover:bg-slate-800 backdrop-blur-md border border-cyan-500/40 hover:border-cyan-400 text-xs text-slate-200 hover:text-white shadow-xl shadow-cyan-500/10 hover:shadow-cyan-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer group"
+        className="absolute bottom-2.5 sm:bottom-3 left-1/2 -translate-x-1/2 z-20 w-[94%] sm:w-auto max-w-lg flex items-center justify-between sm:justify-center space-x-2 px-3 sm:px-4 py-2 rounded-full bg-slate-900/90 hover:bg-slate-800 backdrop-blur-md border border-cyan-500/40 hover:border-cyan-400 text-xs text-slate-200 hover:text-white shadow-xl shadow-cyan-500/10 hover:shadow-cyan-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer group"
         title="Click to browse all 118 elements or inspect detailed properties"
       >
-        <Sparkles className="w-4 h-4 text-cyan-400 group-hover:rotate-12 transition-transform" />
-        <span className="font-medium text-xs sm:text-sm">
-          Click any element in 3D to inspect detailed atomic properties & reactions
-        </span>
-        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 group-hover:bg-cyan-500 group-hover:text-slate-950 transition-colors whitespace-nowrap">
-          Browse All 118 →
+        <div className="flex items-center space-x-1.5 sm:space-x-2 truncate">
+          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 flex-shrink-0 group-hover:rotate-12 transition-transform" />
+          <span className="font-medium text-[11px] sm:text-xs truncate">
+            <span className="inline sm:hidden">Click any 3D element or browse:</span>
+            <span className="hidden sm:inline">Click any element in 3D to inspect properties:</span>
+          </span>
+        </div>
+        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 group-hover:bg-cyan-500 group-hover:text-slate-950 transition-colors whitespace-nowrap flex-shrink-0">
+          Browse 118 →
         </span>
       </button>
 
       {/* ALL 118 ELEMENTS QUICK BROWSER MODAL */}
       {showElementBrowser && (
-        <div className="absolute inset-0 z-40 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-4xl max-h-[88vh] bg-slate-900/95 backdrop-blur-2xl border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl flex flex-col space-y-4">
+        <div className="absolute inset-0 z-40 flex items-center justify-center p-2 sm:p-6 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-4xl max-h-[90vh] bg-slate-900/95 backdrop-blur-2xl border border-slate-800 rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 shadow-2xl flex flex-col space-y-3 sm:space-y-4">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 sm:pb-3">
               <div>
                 <div className="flex items-center space-x-2">
                   <Atom className="w-5 h-5 text-cyan-400" />
-                  <h3 className="text-lg sm:text-xl font-bold text-white">
+                  <h3 className="text-base sm:text-xl font-bold text-white">
                     Atlas of All 118 Chemical Elements
                   </h3>
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
                   Click any element to inspect its electronic shells, thermodynamic states, and verified reactions.
                 </p>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1.5 sm:space-x-2">
                 <button
                   onClick={() => {
                     const randomEl = elementsData[Math.floor(Math.random() * elementsData.length)];
                     setSelectedElement(randomEl);
                     setShowElementBrowser(false);
                   }}
-                  className="px-3 py-1.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 border border-purple-500/30 text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer"
+                  className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 border border-purple-500/30 text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer"
                   title="Inspect a random element"
                 >
                   <Dices className="w-3.5 h-3.5" />
@@ -1048,7 +1073,7 @@ export default function PeriodicTable3D({
             </div>
 
             {/* Search & Category Filter */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
               <div className="relative flex-1">
                 <Search className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
                 <input
@@ -1073,7 +1098,7 @@ export default function PeriodicTable3D({
                 <select
                   value={browserCategory}
                   onChange={(e) => setBrowserCategory(e.target.value)}
-                  className="bg-slate-950 border border-slate-800 text-cyan-300 font-semibold text-xs px-3 py-2 rounded-xl focus:outline-none cursor-pointer"
+                  className="w-full sm:w-auto bg-slate-950 border border-slate-800 text-cyan-300 font-semibold text-xs px-3 py-2 rounded-xl focus:outline-none cursor-pointer"
                 >
                   {categoryPills.map((c) => (
                     <option key={c.id} value={c.id} className="bg-slate-900 text-slate-200">
@@ -1085,7 +1110,7 @@ export default function PeriodicTable3D({
             </div>
 
             {/* Elements Grid (All 118 elements) */}
-            <div className="flex-1 overflow-y-auto pr-1 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+            <div className="flex-1 overflow-y-auto pr-1 grid grid-cols-2 min-[400px]:grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-1.5 sm:gap-2">
               {elementsData
                 .filter((el) => {
                   if (browserCategory !== 'all' && el.category !== browserCategory) return false;
@@ -1107,7 +1132,7 @@ export default function PeriodicTable3D({
                         setSelectedElement(el);
                         setShowElementBrowser(false);
                       }}
-                      className="p-2 rounded-xl bg-slate-950/80 hover:bg-slate-850 border border-slate-800 hover:border-cyan-400 text-left transition-all hover:scale-105 hover:shadow-lg flex flex-col justify-between group cursor-pointer"
+                      className="p-1.5 sm:p-2 rounded-xl bg-slate-950/80 hover:bg-slate-850 border border-slate-800 hover:border-cyan-400 text-left transition-all hover:scale-105 hover:shadow-lg flex flex-col justify-between group cursor-pointer active:scale-95"
                       style={{
                         borderColor: `${catMeta.color}40`,
                       }}
@@ -1116,9 +1141,9 @@ export default function PeriodicTable3D({
                         <span>#{el.number}</span>
                         <span className="text-[9px] truncate max-w-[45px] opacity-75">{el.atomicMass}</span>
                       </div>
-                      <div className="my-1 text-center">
+                      <div className="my-0.5 sm:my-1 text-center">
                         <span
-                          className="text-lg font-black tracking-tight group-hover:text-white"
+                          className="text-base sm:text-lg font-black tracking-tight group-hover:text-white"
                           style={{ color: catMeta.color }}
                         >
                           {el.symbol}
@@ -1134,10 +1159,11 @@ export default function PeriodicTable3D({
 
             {/* Footer */}
             <div className="flex items-center justify-between pt-2 border-t border-slate-800 text-xs text-slate-400">
-              <span>Showing all 118 elements with real-time property inspection</span>
+              <span className="hidden sm:inline">Showing all 118 elements with real-time property inspection</span>
+              <span className="sm:hidden text-[11px] font-mono">118 Elements</span>
               <button
                 onClick={() => setShowElementBrowser(false)}
-                className="px-4 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition-colors cursor-pointer"
+                className="px-3.5 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition-colors cursor-pointer text-xs"
               >
                 Close Browser
               </button>
@@ -1148,13 +1174,13 @@ export default function PeriodicTable3D({
 
       {/* ELEMENT INSPECTOR MODAL IN 3D SCENE */}
       {selectedElement && (
-        <div className="absolute inset-0 z-40 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-lg bg-slate-900/95 backdrop-blur-2xl border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4">
+        <div className="absolute inset-0 z-40 flex items-center justify-center p-2 sm:p-6 bg-black/65 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg bg-slate-900/95 backdrop-blur-2xl border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl max-h-[92vh] overflow-y-auto space-y-3.5 sm:space-y-4">
             {/* Header: Element Title and Close Button */}
             <div className="flex items-start justify-between">
-              <div className="flex items-center space-x-3.5">
+              <div className="flex items-center space-x-3 sm:space-x-3.5">
                 <div
-                  className="w-14 h-14 rounded-2xl flex flex-col items-center justify-center font-bold text-white shadow-lg border"
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex flex-col items-center justify-center font-bold text-white shadow-lg border flex-shrink-0"
                   style={{
                     backgroundColor: `${getCategoryMeta(selectedElement.category).color}25`,
                     borderColor: getCategoryMeta(selectedElement.category).color,
@@ -1164,14 +1190,14 @@ export default function PeriodicTable3D({
                   <span className="text-[10px] font-mono opacity-80 leading-none">
                     {selectedElement.number}
                   </span>
-                  <span className="text-2xl font-black leading-none mt-0.5">
+                  <span className="text-xl sm:text-2xl font-black leading-none mt-0.5">
                     {selectedElement.symbol}
                   </span>
                 </div>
 
                 <div>
-                  <div className="flex items-center space-x-2">
-                    <h3 className="text-xl sm:text-2xl font-black text-white">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <h3 className="text-lg sm:text-2xl font-black text-white">
                       {selectedElement.name}
                     </h3>
                     <span
@@ -1186,7 +1212,7 @@ export default function PeriodicTable3D({
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-400 mt-0.5 font-mono">
+                  <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5 font-mono">
                     Mass: {selectedElement.atomicMass} u • Period {selectedElement.period}, Group {selectedElement.group} ({selectedElement.block}-block)
                   </p>
                 </div>
@@ -1194,14 +1220,14 @@ export default function PeriodicTable3D({
 
               <button
                 onClick={() => setSelectedElement(null)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-white bg-slate-950 border border-slate-800 hover:border-slate-700 transition-colors"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white bg-slate-950 border border-slate-800 hover:border-slate-700 transition-colors flex-shrink-0 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Electronic Shells Configuration */}
-            <div className="p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80 flex items-center justify-between">
+            <div className="p-2.5 sm:p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
               <div>
                 <div className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
                   Electron Configuration
@@ -1212,7 +1238,7 @@ export default function PeriodicTable3D({
               </div>
 
               {selectedElement.electronsPerShell && (
-                <div className="flex items-center space-x-1 text-[11px] font-mono text-slate-300">
+                <div className="flex items-center space-x-1 text-[10px] sm:text-[11px] font-mono text-slate-300">
                   <span className="text-slate-500 mr-1">Shells:</span>
                   {selectedElement.electronsPerShell.join(' • ')}
                 </div>
@@ -1220,39 +1246,39 @@ export default function PeriodicTable3D({
             </div>
 
             {/* Quick Properties Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
-              <div className="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5 text-xs">
+              <div className="p-2 sm:p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
                 <span className="text-slate-500 block text-[10px] uppercase font-medium">State of Matter</span>
                 <span className="font-semibold text-slate-200 mt-0.5 block">{selectedElement.state}</span>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="p-2 sm:p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
                 <span className="text-slate-500 block text-[10px] uppercase font-medium">Electronegativity</span>
                 <span className="font-semibold text-slate-200 mt-0.5 block">{selectedElement.electronegativity ?? '—'}</span>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="p-2 sm:p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
                 <span className="text-slate-500 block text-[10px] uppercase font-medium">Atomic Radius</span>
                 <span className="font-semibold text-slate-200 mt-0.5 block">
                   {selectedElement.atomicRadius ? `${selectedElement.atomicRadius} pm` : '—'}
                 </span>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="p-2 sm:p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
                 <span className="text-slate-500 block text-[10px] uppercase font-medium">Melting Point</span>
                 <span className="font-semibold text-slate-200 mt-0.5 block">
                   {selectedElement.meltingPoint ? `${kelvinToCelsius(selectedElement.meltingPoint)}°C` : '—'}
                 </span>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="p-2 sm:p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
                 <span className="text-slate-500 block text-[10px] uppercase font-medium">Boiling Point</span>
                 <span className="font-semibold text-slate-200 mt-0.5 block">
                   {selectedElement.boilingPoint ? `${kelvinToCelsius(selectedElement.boilingPoint)}°C` : '—'}
                 </span>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="p-2 sm:p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
                 <span className="text-slate-500 block text-[10px] uppercase font-medium">Density</span>
                 <span className="font-semibold text-slate-200 mt-0.5 block">
                   {selectedElement.density != null ? `${selectedElement.density} g/cm³` : '—'}
@@ -1262,16 +1288,16 @@ export default function PeriodicTable3D({
 
             {/* Scientific Summary */}
             {selectedElement.summary && (
-              <p className="text-xs text-slate-300 leading-relaxed bg-slate-950/40 p-3 rounded-xl border border-slate-800/60">
+              <p className="text-xs text-slate-300 leading-relaxed bg-slate-950/40 p-2.5 sm:p-3 rounded-xl border border-slate-800/60">
                 {selectedElement.summary}
               </p>
             )}
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-between gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-2">
               <button
                 onClick={() => toggleBookmark(selectedElement.symbol)}
-                className={`flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                className={`flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                   isBookmarked(selectedElement.symbol)
                     ? 'bg-amber-500/15 text-amber-300 border-amber-500/40'
                     : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
@@ -1283,13 +1309,13 @@ export default function PeriodicTable3D({
                   }`}
                 />
                 <span>
-                  {isBookmarked(selectedElement.symbol) ? 'Bookmarked' : 'Bookmark'}
+                  {isBookmarked(selectedElement.symbol) ? 'Bookmarked' : 'Bookmark Element'}
                 </span>
               </button>
 
               <button
                 onClick={() => navigate(`/element/${selectedElement.symbol}`)}
-                className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-all shadow-lg shadow-cyan-500/20"
+                className="flex-1 flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-all shadow-lg shadow-cyan-500/20 cursor-pointer"
               >
                 <span>Full Element Profile & Reactions</span>
                 <ExternalLink className="w-3.5 h-3.5" />
