@@ -15,7 +15,8 @@ import {
   LogOut,
   Menu,
   X,
-  Compass
+  Compass,
+  Box
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useBookmarks } from '@/context/BookmarkContext';
@@ -35,6 +36,7 @@ export default function Navbar() {
 
   const navLinks = [
     { name: 'Periodic Table', path: '/periodic-table', icon: TableProperties },
+    { name: '3D Atlas', path: '/periodic-table-3d', icon: Box, badge: '3D' },
     { name: 'Reactions', path: '/reactions', icon: FlaskConical },
     { name: 'Quizzes', path: '/quizzes', icon: HelpCircle },
     { name: 'AI Assistant', path: '/assistant', icon: Sparkles },
@@ -96,6 +98,11 @@ export default function Navbar() {
                 >
                   <Icon className="w-4 h-4" />
                   <span>{link.name}</span>
+                  {link.badge && (
+                    <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-950 shadow-sm leading-none ml-0.5">
+                      {link.badge}
+                    </span>
+                  )}
                 </NavLink>
               );
             })}
@@ -246,6 +253,11 @@ export default function Navbar() {
                 >
                   <Icon className="w-5 h-5" />
                   <span>{link.name}</span>
+                  {link.badge && (
+                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-950 leading-none ml-auto">
+                      {link.badge}
+                    </span>
+                  )}
                 </NavLink>
               );
             })}

@@ -41,6 +41,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/periodic-table" element={<PeriodicTablePage />} />
+          <Route path="/periodic-table-3d" element={<PeriodicTablePage />} />
           <Route path="/element/:symbol" element={<ElementDetailPage />} />
           <Route path="/reactions" element={<ReactionsPage />} />
           <Route path="/search" element={<SearchPage />} />

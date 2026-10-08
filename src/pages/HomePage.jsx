@@ -12,7 +12,8 @@ import {
   ShieldCheck,
   Zap,
   BookOpen,
-  Bookmark
+  Bookmark,
+  Box
 } from 'lucide-react';
 import { elementsData } from '@/data/elementsData';
 import { getCategoryMeta, formatChemicalFormula } from '@/utils/chemistryUtils';
@@ -337,6 +338,14 @@ export default function HomePage() {
           >
             <TableProperties className="w-4 h-4" />
             <span>Open Periodic Table</span>
+          </Link>
+
+          <Link
+            to="/periodic-table-3d"
+            className="px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600/80 to-cyan-600/80 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-sm flex items-center space-x-2 border border-cyan-400/30 shadow-lg shadow-cyan-500/20 transition-all hover:scale-105"
+          >
+            <Box className="w-4 h-4 text-cyan-300" />
+            <span>Launch 3D Atlas</span>
           </Link>
 
           <Link

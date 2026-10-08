@@ -8,7 +8,8 @@ import {
   List,
   LayoutGrid,
   Filter,
-  Check
+  Check,
+  Box
 } from 'lucide-react';
 import { CATEGORY_CONFIG } from '@/utils/chemistryUtils';
 
@@ -107,6 +108,19 @@ export default function PeriodicFilters({
             >
               <Grid className="w-4 h-4" />
               <span className="hidden sm:inline">Grid</span>
+            </button>
+
+            <button
+              onClick={() => setViewMode('3d')}
+              className={`p-1.5 rounded-lg text-xs font-medium flex items-center space-x-1.5 transition-colors ${
+                viewMode === '3d'
+                  ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Interactive 3D Periodic Atlas"
+            >
+              <Box className="w-4 h-4" />
+              <span className="hidden sm:inline">3D View</span>
             </button>
 
             <button
