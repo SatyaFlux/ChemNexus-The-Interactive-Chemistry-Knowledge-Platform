@@ -7,16 +7,51 @@ import QuizScoreSummary from '@/components/quiz/QuizScoreSummary';
 import { useProgress } from '@/context/ProgressContext';
 import { HelpCircle, ArrowLeft, Sparkles } from 'lucide-react';
 
+// Randomizes the options order for every question and updates correctIndex accordingly
+function shuffleQuizOptions(baseQuiz) {
+  if (!baseQuiz || !baseQuiz.questions) return baseQuiz;
+
+  return {
+    ...baseQuiz,
+    questions: baseQuiz.questions.map((q) => {
+      const correctAnswer = q.options[q.correctIndex];
+      // Clone options array and shuffle with Fisher-Yates
+      const shuffledOptions = [...q.options];
+      for (let i = shuffledOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+      }
+      const newCorrectIndex = shuffledOptions.indexOf(correctAnswer);
+
+      return {
+        ...q,
+        options: shuffledOptions,
+        correctIndex: newCorrectIndex >= 0 ? newCorrectIndex : 0,
+      };
+    }),
+  };
+}
+
 export default function QuizDetailPage() {
   const { id } = useParams();
-  const quiz = quizzesData.find((q) => q.id === id);
+  const rawQuiz = quizzesData.find((q) => q.id === id);
   const { recordQuizCompletion } = useProgress();
 
   const [completed, setCompleted] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
+  const [quiz, setQuiz] = useState(() => (rawQuiz ? shuffleQuizOptions(rawQuiz) : null));
 
-  if (!quiz) {
+  React.useEffect(() => {
+    if (rawQuiz) {
+      setQuiz(shuffleQuizOptions(rawQuiz));
+      setCompleted(false);
+      setFinalScore(0);
+      setUserAnswers({});
+    }
+  }, [id, rawQuiz]);
+
+  if (!rawQuiz || !quiz) {
     return (
       <div className="max-w-2xl mx-auto py-20 px-4 text-center space-y-4">
         <Sparkles className="w-12 h-12 text-cyan-400 mx-auto" />
@@ -54,6 +89,9 @@ export default function QuizDetailPage() {
     setCompleted(false);
     setFinalScore(0);
     setUserAnswers({});
+    if (rawQuiz) {
+      setQuiz(shuffleQuizOptions(rawQuiz));
+    }
   };
 
   return (
@@ -68,7 +106,7 @@ export default function QuizDetailPage() {
       </Link>
 
       {!completed ? (
-        <QuizSession quiz={quiz} onComplete={handleQuizComplete} />
+        <QuizSession key={`${quiz.id}-${completed}`} quiz={quiz} onComplete={handleQuizComplete} />
       ) : (
         <QuizScoreSummary
           quiz={quiz}
