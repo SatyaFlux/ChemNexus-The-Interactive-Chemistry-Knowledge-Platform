@@ -16,7 +16,9 @@ import {
   Menu,
   X,
   Compass,
-  Box
+  Box,
+  FileText,
+  SlidersHorizontal
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useBookmarks } from '@/context/BookmarkContext';
@@ -26,24 +28,35 @@ import LanguageToggle from '@/components/common/LanguageToggle';
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [guidesDropdownOpen, setGuidesDropdownOpen] = useState(false);
   const { user, profile, isGuest, signOut } = useAuth();
   const { bookmarks } = useBookmarks();
-  const { t } = useLanguage();
+  const { t, isHindi } = useLanguage();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
     await signOut();
     setUserDropdownOpen(false);
-    navigate('/');
+    navigate(isHindi ? '/hi' : '/');
   };
 
-  const navLinks = [
-    { name: t('nav_periodicTable'), path: '/periodic-table', icon: TableProperties },
-    { name: t('nav_atlas3d'), path: '/periodic-table-3d', icon: Box, badge: '3D' },
-    { name: t('nav_reactions'), path: '/reactions', icon: FlaskConical },
-    { name: t('nav_quizzes'), path: '/quizzes', icon: HelpCircle },
+  const prefix = isHindi ? '/hi' : '';
+
+  const mainNavLinks = [
+    { name: t('nav_periodicTable'), path: `${prefix}/periodic-table`, icon: TableProperties },
+    { name: t('nav_atlas3d'), path: `${prefix}/periodic-table-3d`, icon: Box, badge: '3D' },
+    { name: t('nav_reactions'), path: `${prefix}/reactions`, icon: FlaskConical },
+    { name: t('nav_quizzes'), path: `${prefix}/quizzes`, icon: HelpCircle },
     { name: t('nav_aiAssistant'), path: '/assistant', icon: Sparkles },
-    { name: t('nav_search'), path: '/search', icon: Search },
+    { name: t('nav_search'), path: `${prefix}/search`, icon: Search },
+  ];
+
+  const guideLinks = [
+    { name: isHindi ? 'अभिक्रिया प्रकार' : 'Reaction Types', path: `${prefix}/reaction-types`, icon: Compass },
+    { name: isHindi ? 'समीकरण संतुलन' : 'Balancing Equations', path: `${prefix}/balancing-equations`, icon: FlaskConical },
+    { name: isHindi ? 'रासायनिक सूत्र' : 'Chemical Formulas', path: `${prefix}/chemical-formulas`, icon: Box },
+    { name: isHindi ? 'आवर्त प्रवृत्तियाँ' : 'Periodic Trends', path: `${prefix}/periodic-trends`, icon: SlidersHorizontal },
+    { name: isHindi ? 'रसायन नोट्स & FAQs' : 'Chemistry Notes & Q&A', path: `${prefix}/chemistry-notes`, icon: FileText },
   ];
 
   return (
@@ -68,7 +81,7 @@ export default function Navbar() {
               <span className="hidden sm:inline">{t('nav_back')}</span>
             </button>
 
-            <Link to="/" className="flex items-center space-x-3 group">
+            <Link to={prefix || '/'} className="flex items-center space-x-3 group">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
                 <Atom className="w-6 h-6 text-white animate-spin-slow" />
               </div>
@@ -85,7 +98,7 @@ export default function Navbar() {
 
           {/* Desktop Navigation Links */}
           <div className="hidden lg:flex items-center space-x-1">
-            {navLinks.map((link) => {
+            {mainNavLinks.map((link) => {
               const Icon = link.icon;
               return (
                 <NavLink
@@ -109,11 +122,43 @@ export default function Navbar() {
                 </NavLink>
               );
             })}
+
+            {/* Guides Dropdown Menu */}
+            <div className="relative">
+              <button
+                onClick={() => setGuidesDropdownOpen(!guidesDropdownOpen)}
+                onBlur={() => setTimeout(() => setGuidesDropdownOpen(false), 200)}
+                className="px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-1 text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
+              >
+                <Compass className="w-4 h-4 text-cyan-400" />
+                <span>{t('nav_guides')}</span>
+                <span className="text-[10px] ml-0.5">▼</span>
+              </button>
+
+              {guidesDropdownOpen && (
+                <div className="absolute left-0 mt-2 w-56 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl py-2 z-50">
+                  {guideLinks.map((g) => {
+                    const Icon = g.icon;
+                    return (
+                      <Link
+                        key={g.path}
+                        to={g.path}
+                        onClick={() => setGuidesDropdownOpen(false)}
+                        className="flex items-center space-x-2.5 px-4 py-2.5 text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-cyan-300 transition-colors"
+                      >
+                        <Icon className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>{g.name}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Right Action Icons & User Menu */}
           <div className="hidden md:flex items-center space-x-3">
-            {/* Language Switcher [EN / हि] */}
+            {/* Bilingual Language Switcher with Links */}
             <LanguageToggle />
 
             {/* Bookmarks Quick Link */}
@@ -145,7 +190,6 @@ export default function Navbar() {
                   </span>
                 </button>
 
-                {/* Dropdown Menu */}
                 {userDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-56 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl py-2 z-50">
                     <div className="px-4 py-2 border-b border-slate-800">
@@ -201,13 +245,13 @@ export default function Navbar() {
               <div className="flex items-center space-x-2">
                 <Link
                   to="/login"
-                  className="px-3.5 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                 >
                   {t('nav_logIn')}
                 </Link>
                 <Link
                   to="/signup"
-                  className="px-3.5 py-1.5 text-sm font-medium bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-400 hover:to-blue-500 shadow-md shadow-cyan-500/20 transition-all"
+                  className="px-3.5 py-1.5 rounded-lg text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20 hover:from-cyan-400 hover:to-blue-500 transition-all"
                 >
                   {t('nav_getStarted')}
                 </Link>
@@ -215,24 +259,13 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile Menu Button & Language Toggle */}
+          {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center space-x-2">
             <LanguageToggle />
-            <Link
-              to="/bookmarks"
-              className="p-1.5 text-slate-300 hover:text-cyan-400 relative"
-              title={t('nav_savedBookmarks')}
-            >
-              <Bookmark className="w-5 h-5" />
-              {bookmarks.length > 0 && (
-                <span className="absolute top-1 right-1 w-4 h-4 text-[10px] font-bold bg-cyan-500 text-slate-950 rounded-full flex items-center justify-center">
-                  {bookmarks.length}
-                </span>
-              )}
-            </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-slate-300 hover:text-white rounded-lg focus:outline-none"
+              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+              aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -242,87 +275,45 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-slate-900/95 border-b border-slate-800 px-4 pt-2 pb-6 space-y-3">
-          <div className="space-y-1">
-            {navLinks.map((link) => {
+        <div className="md:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-6 space-y-3">
+          <div className="grid grid-cols-2 gap-2 pt-2">
+            {mainNavLinks.map((link) => {
               const Icon = link.icon;
               return (
                 <NavLink
                   key={link.path}
                   to={link.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `flex items-center space-x-3 px-3 py-2.5 rounded-lg text-base font-medium ${
-                      isActive
-                        ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
-                        : 'text-slate-300 hover:bg-slate-800'
-                    }`
-                  }
+                  className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800 hover:text-cyan-400"
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-4 h-4 text-cyan-400" />
                   <span>{link.name}</span>
-                  {link.badge && (
-                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-950 leading-none ml-auto">
-                      {link.badge}
-                    </span>
-                  )}
                 </NavLink>
               );
             })}
           </div>
 
-          <div className="pt-3 border-t border-slate-800">
-            {user ? (
-              <div className="space-y-2">
-                <Link
-                  to="/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-3 px-3 py-2 text-slate-200 hover:bg-slate-800 rounded-lg"
-                >
-                  <LayoutDashboard className="w-5 h-5 text-cyan-400" />
-                  <span>{t('nav_studentDashboard')}</span>
-                </Link>
-                <Link
-                  to="/profile"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-3 px-3 py-2 text-slate-200 hover:bg-slate-800 rounded-lg"
-                >
-                  <User className="w-5 h-5 text-cyan-400" />
-                  <span>{t('nav_profileSettings')}</span>
-                </Link>
-                <button
-                  onClick={() => {
-                    handleSignOut();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center space-x-3 px-3 py-2 text-rose-400 hover:bg-rose-500/10 rounded-lg text-left"
-                >
-                  <LogOut className="w-5 h-5" />
-                  <span>{t('nav_signOut')}</span>
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <Link
-                  to="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-center py-2 px-3 text-sm font-medium text-slate-200 bg-slate-800 hover:bg-slate-700 rounded-lg"
-                >
-                  {t('nav_logIn')}
-                </Link>
-                <Link
-                  to="/signup"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-center py-2 px-3 text-sm font-medium text-white bg-cyan-600 hover:bg-cyan-500 rounded-lg"
-                >
-                  {t('nav_signUp')}
-                </Link>
-              </div>
-            )}
+          <div className="border-t border-slate-800 pt-3">
+            <p className="text-xs uppercase text-slate-500 font-semibold mb-2">{t('nav_guides')}</p>
+            <div className="grid grid-cols-2 gap-2">
+              {guideLinks.map((g) => {
+                const Icon = g.icon;
+                return (
+                  <Link
+                    key={g.path}
+                    to={g.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs text-slate-300 hover:bg-slate-800 hover:text-cyan-400"
+                  >
+                    <Icon className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>{g.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
     </nav>
   );
 }
-

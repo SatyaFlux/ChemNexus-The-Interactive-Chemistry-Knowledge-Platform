@@ -1,0 +1,44 @@
+# robots.txt for ChemNexus (https://chemnexus.vercel.app)
+# Educational Chemistry Platform - All Public Pages Crawlable
+
+User-agent: *
+Allow: /
+Allow: /hi/
+Allow: /element/
+Allow: /hi/element/
+Allow: /reactions
+Allow: /hi/reactions
+Allow: /reaction/
+Allow: /hi/reaction/
+Allow: /reaction-types
+Allow: /hi/reaction-types
+Allow: /balancing-equations
+Allow: /hi/balancing-equations
+Allow: /chemical-formulas
+Allow: /hi/chemical-formulas
+Allow: /periodic-trends
+Allow: /hi/periodic-trends
+Allow: /chemistry-notes
+Allow: /hi/chemistry-notes
+Allow: /quizzes
+Allow: /hi/quizzes
+Allow: /about
+Allow: /hi/about
+
+# Disallow private user account, authentication, and API endpoints
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /login
+Disallow: /signup
+Disallow: /bookmarks
+Disallow: /assistant
+Disallow: /api/
+Disallow: /hi/dashboard
+Disallow: /hi/profile
+Disallow: /hi/login
+Disallow: /hi/signup
+Disallow: /hi/bookmarks
+Disallow: /hi/assistant
+
+# XML Sitemap declaration
+Sitemap: https://chemnexus.vercel.app/sitemap.xml

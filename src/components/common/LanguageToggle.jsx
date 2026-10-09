@@ -1,60 +1,52 @@
 // src/components/common/LanguageToggle.jsx
+// Accessible bilingual language switcher linking equivalent Hindi and English pages with correct hreflang attributes.
+
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function LanguageToggle({ className = '' }) {
-  const { language, setLanguage, toggleLanguage } = useLanguage();
+  const { language, getEquivalentPath } = useLanguage();
   const isEn = language === 'en';
   const isHi = language === 'hi';
 
+  const enPath = getEquivalentPath('en');
+  const hiPath = getEquivalentPath('hi');
+
   return (
-    <div
-      role="group"
-      aria-label="Language selection"
-      className={`inline-flex items-center rounded-2xl bg-white border border-slate-200 shadow-sm px-3 py-1 sm:py-1.5 transition-all select-none hover:shadow hover:border-slate-300 cursor-pointer ${className}`}
-      onClick={(e) => {
-        // If clicking background/slash, toggle
-        if (e.target.tagName !== 'BUTTON') {
-          toggleLanguage();
-        }
-      }}
+    <nav
+      aria-label="Language options"
+      className={`inline-flex items-center rounded-2xl bg-slate-900 border border-slate-700/80 shadow-md px-3 py-1 sm:py-1.5 transition-all select-none hover:border-cyan-500/50 ${className}`}
     >
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          setLanguage('en');
-        }}
-        className={`text-sm leading-none transition-colors duration-150 cursor-pointer ${
+      <Link
+        to={enPath}
+        hrefLang="en"
+        className={`text-xs sm:text-sm font-semibold transition-colors duration-150 px-1 py-0.5 rounded ${
           isEn
-            ? 'font-bold text-[#059669]'
-            : 'font-medium text-slate-400 hover:text-slate-600'
+            ? 'text-cyan-400 font-bold bg-cyan-500/10'
+            : 'text-slate-400 hover:text-slate-200'
         }`}
         title="Switch to English"
-        aria-pressed={isEn}
+        aria-current={isEn ? 'true' : undefined}
       >
         EN
-      </button>
+      </Link>
 
-      <span className="mx-1 text-xs text-slate-300 select-none">/</span>
+      <span className="mx-1 text-xs text-slate-600 select-none">/</span>
 
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          setLanguage('hi');
-        }}
-        className={`text-sm leading-none transition-colors duration-150 cursor-pointer ${
+      <Link
+        to={hiPath}
+        hrefLang="hi"
+        className={`text-xs sm:text-sm font-semibold transition-colors duration-150 px-1 py-0.5 rounded ${
           isHi
-            ? 'font-bold text-[#059669]'
-            : 'font-medium text-slate-400 hover:text-slate-600'
+            ? 'text-cyan-400 font-bold bg-cyan-500/10'
+            : 'text-slate-400 hover:text-slate-200'
         }`}
-        title="हिंदी में बदलें (Switch to Hindi)"
-        aria-pressed={isHi}
+        title="हिंदी में पढ़ें (Read in Hindi)"
+        aria-current={isHi ? 'true' : undefined}
       >
-        हि
-      </button>
-    </div>
+        हिन्दी
+      </Link>
+    </nav>
   );
 }
-

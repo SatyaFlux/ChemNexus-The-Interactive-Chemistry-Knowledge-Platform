@@ -4,17 +4,24 @@ import { Link } from 'react-router-dom';
 import { Bookmark, ArrowRight, Sparkles } from 'lucide-react';
 import { getCategoryMeta } from '@/utils/chemistryUtils';
 import { useBookmarks } from '@/context/BookmarkContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function MobileElementList({ elements, viewMode = 'cards' }) {
   const { isBookmarked, toggleBookmark } = useBookmarks();
+  const { isHindi, getTranslatedCategory } = useLanguage();
+  const prefix = isHindi ? '/hi' : '';
 
   if (elements.length === 0) {
     return (
       <div className="text-center py-16 bg-slate-900/40 rounded-2xl border border-slate-800">
         <Sparkles className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-        <h3 className="text-base font-semibold text-slate-300">No Elements Found</h3>
+        <h3 className="text-base font-semibold text-slate-300">
+          {isHindi ? 'कोई तत्व नहीं मिला' : 'No Elements Found'}
+        </h3>
         <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-          Try adjusting your filter options or clearing the search query.
+          {isHindi
+            ? 'फ़िल्टर विकल्पों को बदलकर या खोज शब्द साफ़ करके पुनः प्रयास करें।'
+            : 'Try adjusting your filter options or clearing the search query.'}
         </p>
       </div>
     );
@@ -28,18 +35,22 @@ export default function MobileElementList({ elements, viewMode = 'cards' }) {
             <thead className="bg-slate-950 text-slate-400 font-mono uppercase tracking-wider text-[11px] border-b border-slate-800">
               <tr>
                 <th className="py-3 px-4">#</th>
-                <th className="py-3 px-4">Element</th>
-                <th className="py-3 px-4">Category</th>
-                <th className="py-3 px-4">Mass (u)</th>
-                <th className="py-3 px-4">Electronegativity</th>
-                <th className="py-3 px-4">State</th>
-                <th className="py-3 px-4 text-right">Actions</th>
+                <th className="py-3 px-4">{isHindi ? 'तत्व' : 'Element'}</th>
+                <th className="py-3 px-4">{isHindi ? 'वर्ग' : 'Category'}</th>
+                <th className="py-3 px-4">{isHindi ? 'द्रव्यमान (u)' : 'Mass (u)'}</th>
+                <th className="py-3 px-4">{isHindi ? 'विद्युतऋणात्मकता' : 'Electronegativity'}</th>
+                <th className="py-3 px-4">{isHindi ? 'अवस्था' : 'State'}</th>
+                <th className="py-3 px-4 text-right">{isHindi ? 'विवरण' : 'Actions'}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 font-sans">
               {elements.map((el) => {
                 const categoryMeta = getCategoryMeta(el.category);
+                const categoryName = getTranslatedCategory(el.category, categoryMeta.name);
                 const bookmarked = isBookmarked(el.symbol);
+                const elName = isHindi && el.hindiName ? el.hindiName : el.name;
+                const elementUrl = `${prefix}/element/${el.symbol}`;
+
                 return (
                   <tr
                     key={el.symbol}
@@ -50,7 +61,7 @@ export default function MobileElementList({ elements, viewMode = 'cards' }) {
                     </td>
                     <td className="py-3 px-4">
                       <Link
-                        to={`/element/${el.symbol}`}
+                        to={elementUrl}
                         className="flex items-center space-x-2.5 group-hover:text-cyan-400"
                       >
                         <span
@@ -60,18 +71,18 @@ export default function MobileElementList({ elements, viewMode = 'cards' }) {
                           {el.symbol}
                         </span>
                         <div>
-                          <span className="font-semibold text-slate-200 block">
-                            {el.name}
-                          </span>
-                          <span className="text-[10px] text-slate-500 font-mono">
-                            {el.electronConfiguration}
-                          </span>
+                          <div className="font-semibold text-white group-hover:text-cyan-300">
+                            {elName}
+                          </div>
+                          <div className="text-[10px] text-slate-500 font-mono">
+                            {el.name !== elName && `${el.name} • `}Group {el.group}
+                          </div>
                         </div>
                       </Link>
                     </td>
-                    <td className="py-3 px-4">
-                      <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-medium ${categoryMeta.badgeClass}`}>
-                        {categoryMeta.name}
+                    <td className="py-3 px-4 text-slate-300">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${categoryMeta.badgeClass}`}>
+                        {categoryName}
                       </span>
                     </td>
                     <td className="py-3 px-4 font-mono text-slate-300">
@@ -80,11 +91,11 @@ export default function MobileElementList({ elements, viewMode = 'cards' }) {
                     <td className="py-3 px-4 font-mono text-slate-300">
                       {el.electronegativity ?? '—'}
                     </td>
-                    <td className="py-3 px-4 text-slate-400">
+                    <td className="py-3 px-4 text-slate-300">
                       {el.state}
                     </td>
                     <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end space-x-2">
+                      <div className="flex items-center justify-end space-x-1">
                         <button
                           onClick={() => toggleBookmark(el)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-slate-800"
@@ -96,7 +107,7 @@ export default function MobileElementList({ elements, viewMode = 'cards' }) {
                           />
                         </button>
                         <Link
-                          to={`/element/${el.symbol}`}
+                          to={elementUrl}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-slate-800"
                         >
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -118,7 +129,11 @@ export default function MobileElementList({ elements, viewMode = 'cards' }) {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {elements.map((el) => {
         const categoryMeta = getCategoryMeta(el.category);
+        const categoryName = getTranslatedCategory(el.category, categoryMeta.name);
         const bookmarked = isBookmarked(el.symbol);
+        const elName = isHindi && el.hindiName ? el.hindiName : el.name;
+        const elSummary = isHindi && el.hindiSummary ? el.hindiSummary : el.summary;
+        const elementUrl = `${prefix}/element/${el.symbol}`;
 
         return (
           <div
@@ -137,7 +152,7 @@ export default function MobileElementList({ elements, viewMode = 'cards' }) {
                   </div>
                   <div>
                     <h4 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors">
-                      {el.name}
+                      {elName}
                     </h4>
                     <p className="text-xs text-slate-400 font-mono">
                       #{el.number} • Group {el.group}
@@ -161,13 +176,13 @@ export default function MobileElementList({ elements, viewMode = 'cards' }) {
               {/* Category Badge */}
               <div className="mb-3">
                 <span className={`inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium ${categoryMeta.badgeClass}`}>
-                  {categoryMeta.name}
+                  {categoryName}
                 </span>
               </div>
 
               {/* Summary */}
               <p className="text-xs text-slate-300/90 line-clamp-2 leading-relaxed mb-4">
-                {el.summary}
+                {elSummary}
               </p>
             </div>
 
@@ -178,10 +193,10 @@ export default function MobileElementList({ elements, viewMode = 'cards' }) {
               </div>
 
               <Link
-                to={`/element/${el.symbol}`}
+                to={elementUrl}
                 className="inline-flex items-center space-x-1 text-cyan-400 hover:text-cyan-300 font-medium"
               >
-                <span>Details</span>
+                <span>{isHindi ? 'विवरण' : 'Details'}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -191,4 +206,3 @@ export default function MobileElementList({ elements, viewMode = 'cards' }) {
     </div>
   );
 }
-

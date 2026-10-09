@@ -1,5 +1,8 @@
 // src/context/LanguageContext.jsx
-import React, { createContext, useContext, useState, useEffect } from 'react';
+// Complete bilingual state management, URL routing sync, and translation dictionary for ChemNexus.
+
+import React, { createContext, useContext, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const LanguageContext = createContext();
 
@@ -9,6 +12,12 @@ export const translations = {
     nav_periodicTable: 'Periodic Table',
     nav_atlas3d: '3D Atlas',
     nav_reactions: 'Reactions',
+    nav_reactionTypes: 'Reaction Types',
+    nav_balancing: 'Balancing Equations',
+    nav_formulas: 'Chemical Formulas',
+    nav_trends: 'Periodic Trends',
+    nav_notes: 'Chemistry Notes',
+    nav_guides: 'Study Guides',
     nav_quizzes: 'Quizzes',
     nav_aiAssistant: 'AI Assistant',
     nav_search: 'Search',
@@ -89,6 +98,16 @@ export const translations = {
     cat_actinide: 'Actinide',
     cat_unknown: 'Unknown Properties',
 
+    // Common
+    common_valency: 'Valency',
+    common_references: 'Scientific References',
+    common_balancedEquation: 'Balanced Equation',
+    common_reactants: 'Reactants',
+    common_products: 'Products',
+    common_conditions: 'Conditions',
+    common_readMore: 'Read Full Guide',
+    common_switchLanguage: 'Switch to हिन्दी (Hindi)',
+
     // Footer
     footer_tagline: 'Explore Every Element. Understand Every Reaction. A centralized, research-grade chemistry knowledge platform designed for students, researchers, and science educators.',
     footer_iupacVerified: 'IUPAC Standard Verified Reference Data',
@@ -108,13 +127,19 @@ export const translations = {
     footer_dataSources: 'Data Sources & IUPAC',
     footer_privacy: 'Privacy Policy',
     footer_terms: 'Terms of Use',
-    footer_copyright: 'All rights reserved. Designed for chemistry learners and researchers worldwide.',
+    footer_copyright: 'All rights reserved. Designed for chemistry learners and researchers worldwide.'
   },
   hi: {
     // Navbar
     nav_periodicTable: 'आवर्त सारणी',
     nav_atlas3d: '3D एटलस',
-    nav_reactions: 'अभिक्रियाएं',
+    nav_reactions: 'अभिक्रियाएँ',
+    nav_reactionTypes: 'अभिक्रिया प्रकार',
+    nav_balancing: 'समीकरण संतुलन',
+    nav_formulas: 'रासायनिक सूत्र',
+    nav_trends: 'आवर्त प्रवृत्तियाँ',
+    nav_notes: 'रसायन नोट्स',
+    nav_guides: 'अध्ययन मार्गदर्शिका',
     nav_quizzes: 'क्विज़',
     nav_aiAssistant: 'AI सहायक',
     nav_search: 'खोजें',
@@ -195,6 +220,16 @@ export const translations = {
     cat_actinide: 'ऐक्टिनाइड (Actinide)',
     cat_unknown: 'अज्ञात गुण (Unknown)',
 
+    // Common
+    common_valency: 'संयोजकता',
+    common_references: 'वैज्ञानिक संदर्भ',
+    common_balancedEquation: 'संतुलित रासायनिक समीकरण',
+    common_reactants: 'अभिकारक',
+    common_products: 'उत्पाद',
+    common_conditions: 'अभिक्रिया परिस्थितियाँ',
+    common_readMore: 'संपूर्ण मार्गदर्शिका पढ़ें',
+    common_switchLanguage: 'Switch to English (अंग्रेज़ी)',
+
     // Footer
     footer_tagline: 'हर तत्व को समझें। हर अभिक्रिया को जानें। छात्रों, शोधकर्ताओं और शिक्षकों के लिए डिज़ाइन किया गया रसायन विज्ञान ज्ञान मंच।',
     footer_iupacVerified: 'IUPAC मानक सत्यापित संदर्भ डेटा',
@@ -214,7 +249,7 @@ export const translations = {
     footer_dataSources: 'डेटा स्रोत और IUPAC',
     footer_privacy: 'गोपनीयता नीति',
     footer_terms: 'उपयोग की शर्तें',
-    footer_copyright: 'सर्वाधिकार सुरक्षित। दुनिया भर के रसायन विज्ञान शिक्षार्थियों और शोधकर्ताओं के लिए डिज़ाइन किया गया।',
+    footer_copyright: 'सर्वाधिकार सुरक्षित। दुनिया भर के रसायन विज्ञान शिक्षार्थियों और शोधकर्ताओं के लिए डिज़ाइन किया गया।'
   }
 };
 
@@ -232,32 +267,40 @@ export const categoryTranslations = {
 };
 
 export function LanguageProvider({ children }) {
-  const [language, setLanguageState] = useState(() => {
-    try {
-      const saved = localStorage.getItem('chemnexus_language');
-      return saved === 'hi' ? 'hi' : 'en';
-    } catch {
-      return 'en';
-    }
-  });
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const setLanguage = (lang) => {
-    const validLang = lang === 'hi' ? 'hi' : 'en';
-    setLanguageState(validLang);
-    try {
-      localStorage.setItem('chemnexus_language', validLang);
-    } catch (e) {
-      console.warn('Failed to save language preference:', e);
-    }
-  };
-
-  const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'hi' : 'en');
-  };
+  // Route-based language detection:
+  // If the pathname starts with /hi or is exactly /hi, language is Hindi
+  const isHiRoute = location.pathname === '/hi' || location.pathname.startsWith('/hi/');
+  const language = isHiRoute ? 'hi' : 'en';
 
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
+
+  // Helper to compute equivalent path for target language
+  const getEquivalentPath = (targetLang) => {
+    const current = location.pathname;
+    if (targetLang === 'hi') {
+      if (current === '/') return '/hi';
+      if (current.startsWith('/hi')) return current;
+      return `/hi${current}`;
+    } else {
+      if (current === '/hi') return '/';
+      if (current.startsWith('/hi/')) return current.replace(/^\/hi/, '');
+      return current;
+    }
+  };
+
+  const switchLanguage = (targetLang) => {
+    const nextPath = getEquivalentPath(targetLang);
+    navigate(nextPath);
+  };
+
+  const toggleLanguage = () => {
+    switchLanguage(language === 'en' ? 'hi' : 'en');
+  };
 
   const t = (key, fallback) => {
     const langDict = translations[language] || translations.en;
@@ -282,11 +325,12 @@ export function LanguageProvider({ children }) {
     <LanguageContext.Provider
       value={{
         language,
-        setLanguage,
+        isHindi: language === 'hi',
+        switchLanguage,
         toggleLanguage,
+        getEquivalentPath,
         t,
         getTranslatedCategory,
-        isHindi: language === 'hi',
       }}
     >
       {children}
@@ -302,3 +346,4 @@ export function useLanguage() {
   return context;
 }
 
+export default LanguageContext;

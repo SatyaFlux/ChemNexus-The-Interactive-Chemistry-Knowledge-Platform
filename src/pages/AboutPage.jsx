@@ -1,21 +1,52 @@
 // src/pages/AboutPage.jsx
 import React from 'react';
 import { Atom, ShieldCheck, Database, Cpu, BookOpen, Layers, CheckCircle2 } from 'lucide-react';
+import SEOHead from '@/components/seo/SEOHead';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function AboutPage() {
+  const { isHindi } = useLanguage();
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+      <SEOHead
+        title={
+          isHindi
+            ? 'ChemNexus के बारे में | रसायन विज्ञान शिक्षा और वैज्ञानिक संदर्भ'
+            : 'About ChemNexus | Chemistry Learning Platform & Scientific Sources'
+        }
+        description={
+          isHindi
+            ? 'ChemNexus के शैक्षिक मिशन, IUPAC वैज्ञानिक स्रोतों और हिंदी-अंग्रेजी द्विभाषी रसायन विज्ञान अध्ययन मंच के बारे में जानें।'
+            : 'Learn about ChemNexus, our educational mission, IUPAC and NIST verified scientific sources, and our comprehensive bilingual chemistry learning platform.'
+        }
+        keywords={[
+          'about ChemNexus',
+          'chemistry learning website',
+          'IUPAC chemistry sources',
+          'bilingual chemistry India',
+          'रसायन विज्ञान के नोट्स',
+          'chemistry ke notes',
+        ]}
+        breadcrumbs={[
+          { name: isHindi ? 'गृह पृष्ठ' : 'Home', path: isHindi ? '/hi' : '/' },
+          { name: isHindi ? 'हमारे बारे में' : 'About Us', path: isHindi ? '/hi/about' : '/about' },
+        ]}
+      />
+
       {/* Title */}
       <div className="text-center space-y-3">
         <div className="inline-flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-cyan-400">
           <Atom className="w-4 h-4" />
-          <span>Platform Mission & Sources</span>
+          <span>{isHindi ? 'मंच मिशन और वैज्ञानिक स्रोत' : 'Platform Mission & Sources'}</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold text-white">
-          About ChemNexus
+          {isHindi ? 'ChemNexus के बारे में' : 'About ChemNexus'}
         </h1>
         <p className="text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          “Explore Every Element. Understand Every Reaction.”
+          {isHindi
+            ? '“प्रत्येक तत्व को जानें। हर रासायनिक अभिक्रिया को समझें।”'
+            : '“Explore Every Element. Understand Every Reaction.”'}
         </p>
       </div>
 

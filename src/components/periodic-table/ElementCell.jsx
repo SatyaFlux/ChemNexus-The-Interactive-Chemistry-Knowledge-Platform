@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Bookmark } from 'lucide-react';
 import { getCategoryMeta, getHeatmapColor } from '@/utils/chemistryUtils';
 import { useBookmarks } from '@/context/BookmarkContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ElementCell({
   element,
@@ -15,12 +16,13 @@ export default function ElementCell({
   onLeave,
 }) {
   const { isBookmarked } = useBookmarks();
+  const { isHindi } = useLanguage();
   const bookmarked = isBookmarked(element.symbol);
   const categoryMeta = getCategoryMeta(element.category);
+  const prefix = isHindi ? '/hi' : '';
 
   // Compute cell background
   let cellStyle = {};
-  let borderClass = 'border-slate-800 hover:border-cyan-400';
 
   if (heatmapMode !== 'standard' && heatmapExtremes[heatmapMode]) {
     const val = element[heatmapMode];
@@ -49,12 +51,12 @@ export default function ElementCell({
     if (heatmapMode === 'boilingPoint') {
       return element.boilingPoint ? `${element.boilingPoint} K` : '—';
     }
-    return element.name;
+    return isHindi && element.hindiName ? element.hindiName : element.name;
   };
 
   return (
     <Link
-      to={`/element/${element.symbol}`}
+      to={`${prefix}/element/${element.symbol}`}
       onMouseEnter={() => onHover && onHover(element)}
       onMouseLeave={() => onLeave && onLeave()}
       style={cellStyle}
@@ -105,4 +107,3 @@ export default function ElementCell({
     </Link>
   );
 }
-

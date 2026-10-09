@@ -1,7 +1,8 @@
 // src/data/reactionsData.js
 // ChemNexus Comprehensive Verified Chemical Reaction Database (65 Reactions)
+import { getEnrichedReaction } from './reactionsEnrichment.js';
 
-export const reactionsData = [
+const baseReactionsData = [
   {
     id: 'rx-01',
     title: 'Water Synthesis / Hydrogen Combustion',
@@ -1875,5 +1876,7 @@ export const reactionsData = [
     notes: 'Critical organic reaction used to safely quench excess unreacted acetylating reagent in industrial aspirin manufacturing.'
   }
 ];
+
+export const reactionsData = baseReactionsData.map(getEnrichedReaction);
 
 export default reactionsData;

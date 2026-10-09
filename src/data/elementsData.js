@@ -1,8 +1,9 @@
 // src/data/elementsData.js
 // ChemNexus Comprehensive 118-Element Dataset
 // Verified scientific properties, electronic configurations, occurrence, extraction, applications, and reactions.
+import { elementsHindiData } from './elementsHindiData.js';
 
-export const elementsData = [
+const baseElementsData = [
   {
     "number": 1,
     "symbol": "H",
@@ -6736,5 +6737,20 @@ export const elementsData = [
     "safety": "Extreme radioactivity; half-life under 1 millisecond. Exists only in atom-at-a-time synthesis."
   }
 ];
+
+export const elementsData = baseElementsData.map((el) => {
+  const extra = elementsHindiData[el.number] || {};
+  return {
+    ...el,
+    hindiName: extra.hindiName || el.name,
+    hindiSummary: extra.hindiSummary || el.summary,
+    valency: extra.valency || 'N/A',
+    references: extra.references || [
+      'IUPAC Periodic Table of Elements',
+      'NIST Atomic Spectra Database',
+      'Royal Society of Chemistry'
+    ]
+  };
+});
 
 export default elementsData;
