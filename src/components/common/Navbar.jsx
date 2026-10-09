@@ -20,12 +20,15 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useBookmarks } from '@/context/BookmarkContext';
+import { useLanguage } from '@/context/LanguageContext';
+import LanguageToggle from '@/components/common/LanguageToggle';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const { user, profile, isGuest, signOut } = useAuth();
   const { bookmarks } = useBookmarks();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -35,12 +38,12 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { name: 'Periodic Table', path: '/periodic-table', icon: TableProperties },
-    { name: '3D Atlas', path: '/periodic-table-3d', icon: Box, badge: '3D' },
-    { name: 'Reactions', path: '/reactions', icon: FlaskConical },
-    { name: 'Quizzes', path: '/quizzes', icon: HelpCircle },
-    { name: 'AI Assistant', path: '/assistant', icon: Sparkles },
-    { name: 'Search', path: '/search', icon: Search },
+    { name: t('nav_periodicTable'), path: '/periodic-table', icon: TableProperties },
+    { name: t('nav_atlas3d'), path: '/periodic-table-3d', icon: Box, badge: '3D' },
+    { name: t('nav_reactions'), path: '/reactions', icon: FlaskConical },
+    { name: t('nav_quizzes'), path: '/quizzes', icon: HelpCircle },
+    { name: t('nav_aiAssistant'), path: '/assistant', icon: Sparkles },
+    { name: t('nav_search'), path: '/search', icon: Search },
   ];
 
   return (
@@ -62,7 +65,7 @@ export default function Navbar() {
               aria-label="Go to back page"
             >
               <ArrowLeft className="w-4 h-4 text-cyan-400" />
-              <span className="hidden sm:inline">Back</span>
+              <span className="hidden sm:inline">{t('nav_back')}</span>
             </button>
 
             <Link to="/" className="flex items-center space-x-3 group">
@@ -74,7 +77,7 @@ export default function Navbar() {
                   Chem<span className="text-cyan-400">Nexus</span>
                 </span>
                 <span className="hidden sm:block text-[10px] text-slate-400 tracking-wider uppercase font-medium">
-                  Chemistry Knowledge Platform
+                  {t('nav_subtitle')}
                 </span>
               </div>
             </Link>
@@ -110,11 +113,14 @@ export default function Navbar() {
 
           {/* Right Action Icons & User Menu */}
           <div className="hidden md:flex items-center space-x-3">
+            {/* Language Switcher [EN / हि] */}
+            <LanguageToggle />
+
             {/* Bookmarks Quick Link */}
             <Link
               to="/bookmarks"
               className="p-2 text-slate-300 hover:text-cyan-400 hover:bg-slate-800 rounded-lg relative transition-colors"
-              title="Saved Bookmarks"
+              title={t('nav_savedBookmarks')}
             >
               <Bookmark className="w-5 h-5" />
               {bookmarks.length > 0 && (
@@ -135,7 +141,7 @@ export default function Navbar() {
                     {user.email ? user.email.charAt(0).toUpperCase() : 'U'}
                   </div>
                   <span className="text-sm font-medium text-slate-200 max-w-[120px] truncate">
-                    {profile?.full_name || user.email?.split('@')[0] || 'Scholar'}
+                    {profile?.full_name || user.email?.split('@')[0] || t('nav_scholar')}
                   </span>
                 </button>
 
@@ -143,11 +149,11 @@ export default function Navbar() {
                 {userDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-56 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl py-2 z-50">
                     <div className="px-4 py-2 border-b border-slate-800">
-                      <p className="text-xs text-slate-400">Signed in as</p>
+                      <p className="text-xs text-slate-400">{t('nav_signedInAs')}</p>
                       <p className="text-sm font-medium text-white truncate">{user.email}</p>
                       {isGuest && (
                         <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded">
-                          Guest Demo Mode
+                          {t('nav_guestMode')}
                         </span>
                       )}
                     </div>
@@ -158,7 +164,7 @@ export default function Navbar() {
                       className="flex items-center space-x-2 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white"
                     >
                       <LayoutDashboard className="w-4 h-4 text-cyan-400" />
-                      <span>Student Dashboard</span>
+                      <span>{t('nav_studentDashboard')}</span>
                     </Link>
 
                     <Link
@@ -167,7 +173,7 @@ export default function Navbar() {
                       className="flex items-center space-x-2 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white"
                     >
                       <Bookmark className="w-4 h-4 text-cyan-400" />
-                      <span>Bookmarked Elements ({bookmarks.length})</span>
+                      <span>{t('nav_bookmarkedElements')} ({bookmarks.length})</span>
                     </Link>
 
                     <Link
@@ -176,7 +182,7 @@ export default function Navbar() {
                       className="flex items-center space-x-2 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white"
                     >
                       <User className="w-4 h-4 text-cyan-400" />
-                      <span>Profile & Settings</span>
+                      <span>{t('nav_profileSettings')}</span>
                     </Link>
 
                     <div className="border-t border-slate-800 my-1"></div>
@@ -186,7 +192,7 @@ export default function Navbar() {
                       className="w-full flex items-center space-x-2 px-4 py-2.5 text-sm text-rose-400 hover:bg-rose-500/10 text-left"
                     >
                       <LogOut className="w-4 h-4" />
-                      <span>Sign Out</span>
+                      <span>{t('nav_signOut')}</span>
                     </button>
                   </div>
                 )}
@@ -197,27 +203,29 @@ export default function Navbar() {
                   to="/login"
                   className="px-3.5 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
                 >
-                  Log In
+                  {t('nav_logIn')}
                 </Link>
                 <Link
                   to="/signup"
                   className="px-3.5 py-1.5 text-sm font-medium bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-400 hover:to-blue-500 shadow-md shadow-cyan-500/20 transition-all"
                 >
-                  Get Started
+                  {t('nav_getStarted')}
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button & Language Toggle */}
           <div className="flex md:hidden items-center space-x-2">
+            <LanguageToggle />
             <Link
               to="/bookmarks"
-              className="p-2 text-slate-300 hover:text-cyan-400 relative"
+              className="p-1.5 text-slate-300 hover:text-cyan-400 relative"
+              title={t('nav_savedBookmarks')}
             >
               <Bookmark className="w-5 h-5" />
               {bookmarks.length > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-4 h-4 text-[10px] font-bold bg-cyan-500 text-slate-950 rounded-full flex items-center justify-center">
+                <span className="absolute top-1 right-1 w-4 h-4 text-[10px] font-bold bg-cyan-500 text-slate-950 rounded-full flex items-center justify-center">
                   {bookmarks.length}
                 </span>
               )}
@@ -272,7 +280,7 @@ export default function Navbar() {
                   className="flex items-center space-x-3 px-3 py-2 text-slate-200 hover:bg-slate-800 rounded-lg"
                 >
                   <LayoutDashboard className="w-5 h-5 text-cyan-400" />
-                  <span>Student Dashboard</span>
+                  <span>{t('nav_studentDashboard')}</span>
                 </Link>
                 <Link
                   to="/profile"
@@ -280,7 +288,7 @@ export default function Navbar() {
                   className="flex items-center space-x-3 px-3 py-2 text-slate-200 hover:bg-slate-800 rounded-lg"
                 >
                   <User className="w-5 h-5 text-cyan-400" />
-                  <span>Profile Settings</span>
+                  <span>{t('nav_profileSettings')}</span>
                 </Link>
                 <button
                   onClick={() => {
@@ -290,7 +298,7 @@ export default function Navbar() {
                   className="w-full flex items-center space-x-3 px-3 py-2 text-rose-400 hover:bg-rose-500/10 rounded-lg text-left"
                 >
                   <LogOut className="w-5 h-5" />
-                  <span>Sign Out</span>
+                  <span>{t('nav_signOut')}</span>
                 </button>
               </div>
             ) : (
@@ -300,14 +308,14 @@ export default function Navbar() {
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-center py-2 px-3 text-sm font-medium text-slate-200 bg-slate-800 hover:bg-slate-700 rounded-lg"
                 >
-                  Log In
+                  {t('nav_logIn')}
                 </Link>
                 <Link
                   to="/signup"
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-center py-2 px-3 text-sm font-medium text-white bg-cyan-600 hover:bg-cyan-500 rounded-lg"
                 >
-                  Sign Up
+                  {t('nav_signUp')}
                 </Link>
               </div>
             )}
