@@ -1,7 +1,7 @@
 // src/components/common/Footer.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Atom, Shield, Sparkles, BookOpen, Compass, FileText, SlidersHorizontal, Box } from 'lucide-react';
+import { Atom, Shield, Sparkles, BookOpen, Compass, FileText, SlidersHorizontal, Box, Phone, User, Code } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function Footer() {
@@ -132,11 +132,49 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
+
+            {/* Developer Contact Card */}
+            <div className="mt-4 pt-3 border-t border-slate-900">
+              <div className="text-xs space-y-1">
+                <span className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold block">
+                  {isHindi ? 'डेवलपर विवरण' : 'Developer Info'}
+                </span>
+                <p className="font-medium text-slate-200 flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <span>Satya Ram</span>
+                  <span className="text-[10px] text-cyan-400 px-1.5 py-0.5 rounded bg-cyan-950/60 border border-cyan-800/40">
+                    Software Engineer
+                  </span>
+                </p>
+                <a
+                  href="tel:6390317539"
+                  className="flex items-center gap-1.5 text-slate-400 hover:text-cyan-400 transition-colors font-mono text-xs pt-0.5"
+                >
+                  <Phone className="w-3 h-3 text-emerald-400 shrink-0" />
+                  <span>+91 6390317539</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-slate-900 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <p>© {new Date().getFullYear()} ChemNexus Platform. {t('footer_copyright')}</p>
+        {/* Bottom Bar: Copyright & Contact */}
+        <div className="border-t border-slate-900 mt-10 pt-6 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
+            <p>© {new Date().getFullYear()} ChemNexus Platform. {t('footer_copyright')}</p>
+            <span className="hidden sm:inline text-slate-700">•</span>
+            <div className="flex items-center gap-1.5 text-slate-400">
+              <Code className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Designed & Built by</span>
+              <strong className="text-slate-200 font-medium">Satya Ram</strong>
+              <span className="text-cyan-400 text-[11px]">(Software Engineer)</span>
+              <span>•</span>
+              <a href="tel:6390317539" className="hover:text-cyan-400 text-slate-300 font-mono transition-colors flex items-center gap-1">
+                <Phone className="w-3 h-3 text-emerald-400" />
+                <span>6390317539</span>
+              </a>
+            </div>
+          </div>
           <div className="flex items-center space-x-4">
             <Link to="/" hrefLang="en" className="hover:text-cyan-400">English (Global)</Link>
             <span>•</span>

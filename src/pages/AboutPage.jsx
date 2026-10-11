@@ -1,6 +1,6 @@
 // src/pages/AboutPage.jsx
 import React from 'react';
-import { Atom, ShieldCheck, Database, Cpu, BookOpen, Layers, CheckCircle2 } from 'lucide-react';
+import { Atom, ShieldCheck, Database, Cpu, BookOpen, Layers, CheckCircle2, User, Phone } from 'lucide-react';
 import SEOHead from '@/components/seo/SEOHead';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -128,6 +128,34 @@ export default function AboutPage() {
             <span><strong>Deployment:</strong> Optimized for zero-configuration deployment to Vercel.</span>
           </li>
         </ul>
+      </div>
+
+      {/* Lead Developer & Creator Card */}
+      <div className="bg-slate-900/70 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-4">
+        <h3 className="text-xl font-bold text-white flex items-center gap-2">
+          <User className="w-5 h-5 text-cyan-400" />
+          <span>{isHindi ? 'डेवलपर संपर्क और श्रेय' : 'Lead Developer & Contact'}</span>
+        </h3>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-5">
+          <div className="space-y-1">
+            <h4 className="text-lg font-bold text-white">Satya Ram</h4>
+            <p className="text-sm text-cyan-400 font-medium">Software Engineer</p>
+            <p className="text-xs text-slate-400">
+              {isHindi
+                ? 'ChemNexus प्लेटफॉर्म के मुख्य वास्तुकार एवं सॉफ्टवेयर इंजीनियर।'
+                : 'Architect and Software Engineer behind the ChemNexus interactive chemistry platform.'}
+            </p>
+          </div>
+          <div className="shrink-0">
+            <a
+              href="tel:6390317539"
+              className="inline-flex items-center space-x-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 hover:text-white px-4 py-2 rounded-xl text-sm font-mono transition-all"
+            >
+              <Phone className="w-4 h-4 text-emerald-400" />
+              <span>+91 6390317539</span>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
