@@ -16,12 +16,12 @@ export default function LanguageToggle({ className = '' }) {
   return (
     <nav
       aria-label="Language options"
-      className={`inline-flex items-center rounded-2xl bg-slate-900 border border-slate-700/80 shadow-md px-3 py-1 sm:py-1.5 transition-all select-none hover:border-cyan-500/50 ${className}`}
+      className={`inline-flex items-center rounded-2xl bg-slate-900 border border-slate-700/80 shadow-md px-2.5 sm:px-3 py-1 sm:py-1.5 transition-all select-none hover:border-cyan-500/50 whitespace-nowrap shrink-0 ${className}`}
     >
       <Link
         to={enPath}
         hrefLang="en"
-        className={`text-xs sm:text-sm font-semibold transition-colors duration-150 px-1 py-0.5 rounded ${
+        className={`text-xs sm:text-sm font-semibold transition-colors duration-150 px-1 py-0.5 rounded whitespace-nowrap ${
           isEn
             ? 'text-cyan-400 font-bold bg-cyan-500/10'
             : 'text-slate-400 hover:text-slate-200'
@@ -32,12 +32,12 @@ export default function LanguageToggle({ className = '' }) {
         EN
       </Link>
 
-      <span className="mx-1 text-xs text-slate-600 select-none">/</span>
+      <span className="mx-1 text-xs text-slate-600 select-none whitespace-nowrap">/</span>
 
       <Link
         to={hiPath}
         hrefLang="hi"
-        className={`text-xs sm:text-sm font-semibold transition-colors duration-150 px-1 py-0.5 rounded ${
+        className={`text-xs sm:text-sm font-semibold transition-colors duration-150 px-1 py-0.5 rounded whitespace-nowrap ${
           isHi
             ? 'text-cyan-400 font-bold bg-cyan-500/10'
             : 'text-slate-400 hover:text-slate-200'

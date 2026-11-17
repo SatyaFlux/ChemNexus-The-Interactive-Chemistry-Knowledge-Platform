@@ -234,12 +234,12 @@ export default function HomePage() {
                 window.history.back();
               }
             }}
-            className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 hover:border-cyan-500/50 text-xs sm:text-sm font-medium shadow-md hover:shadow-cyan-500/10 transition-all group cursor-pointer"
+            className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 hover:border-cyan-500/50 text-xs sm:text-sm font-medium shadow-md hover:shadow-cyan-500/10 transition-all group cursor-pointer whitespace-nowrap shrink-0"
             title={t('home_backButton')}
             aria-label={t('home_backButton')}
           >
-            <ArrowLeft className="w-4 h-4 text-cyan-400 group-hover:-translate-x-1 transition-transform" />
-            <span>{t('home_backButton')}</span>
+            <ArrowLeft className="w-4 h-4 text-cyan-400 group-hover:-translate-x-1 transition-transform shrink-0" />
+            <span className="whitespace-nowrap">{t('home_backButton')}</span>
           </button>
         </div>
 

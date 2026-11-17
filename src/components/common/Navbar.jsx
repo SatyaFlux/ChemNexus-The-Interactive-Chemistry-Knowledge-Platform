@@ -61,10 +61,10 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-[#0a0f1d]/90 backdrop-blur-md border-b border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="w-full max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 gap-2">
           {/* Brand Logo & Back Action */}
-          <div className="flex items-center space-x-2.5">
+          <div className="flex items-center space-x-2 sm:space-x-2.5 shrink-0">
             <button
               onClick={() => {
                 if (window.history.length > 1) {
@@ -73,31 +73,26 @@ export default function Navbar() {
                   window.history.back();
                 }
               }}
-              className="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-cyan-400 border border-slate-800 hover:border-cyan-500/40 transition-all flex items-center space-x-1 text-xs font-medium cursor-pointer"
+              className="p-1.5 sm:p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-cyan-400 border border-slate-800 hover:border-cyan-500/40 transition-all flex items-center space-x-1 text-xs font-medium cursor-pointer shrink-0 whitespace-nowrap"
               title="Go to back page"
               aria-label="Go to back page"
             >
-              <ArrowLeft className="w-4 h-4 text-cyan-400" />
-              <span className="hidden sm:inline">{t('nav_back')}</span>
+              <ArrowLeft className="w-4 h-4 text-cyan-400 shrink-0" />
+              <span className="hidden xl:inline whitespace-nowrap">{t('nav_back')}</span>
             </button>
 
-            <Link to={prefix || '/'} className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
-                <Atom className="w-6 h-6 text-white animate-spin-slow" />
+            <Link to={prefix || '/'} className="flex items-center space-x-2 sm:space-x-2.5 group shrink-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform shrink-0">
+                <Atom className="w-5 h-5 sm:w-6 sm:h-6 text-white animate-spin-slow" />
               </div>
-              <div>
-                <span className="text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
-                  Chem<span className="text-cyan-400">Nexus</span>
-                </span>
-                <span className="hidden sm:block text-[10px] text-slate-400 tracking-wider uppercase font-medium">
-                  {t('nav_subtitle')}
-                </span>
-              </div>
+              <span className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-1 leading-none whitespace-nowrap shrink-0">
+                Chem<span className="text-cyan-400">Nexus</span>
+              </span>
             </Link>
           </div>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden lg:flex items-center space-x-1">
+          <div className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 shrink-0">
             {mainNavLinks.map((link) => {
               const Icon = link.icon;
               return (
@@ -105,17 +100,17 @@ export default function Navbar() {
                   key={link.path}
                   to={link.path}
                   className={({ isActive }) =>
-                    `px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-1.5 transition-colors ${
+                    `px-2 xl:px-3 py-1.5 xl:py-2 rounded-lg text-xs xl:text-sm font-medium flex items-center space-x-1.5 transition-colors whitespace-nowrap shrink-0 ${
                       isActive
                         ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
                         : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
                     }`
                   }
                 >
-                  <Icon className="w-4 h-4" />
-                  <span>{link.name}</span>
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span className="whitespace-nowrap">{link.name}</span>
                   {link.badge && (
-                    <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-950 shadow-sm leading-none ml-0.5">
+                    <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-950 shadow-sm leading-none ml-0.5 whitespace-nowrap">
                       {link.badge}
                     </span>
                   )}
@@ -124,14 +119,14 @@ export default function Navbar() {
             })}
 
             {/* Guides Dropdown Menu */}
-            <div className="relative">
+            <div className="relative shrink-0">
               <button
                 onClick={() => setGuidesDropdownOpen(!guidesDropdownOpen)}
                 onBlur={() => setTimeout(() => setGuidesDropdownOpen(false), 200)}
-                className="px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-1 text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
+                className="px-2 xl:px-3 py-1.5 xl:py-2 rounded-lg text-xs xl:text-sm font-medium flex items-center space-x-1 text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors whitespace-nowrap shrink-0"
               >
-                <Compass className="w-4 h-4 text-cyan-400" />
-                <span>{t('nav_guides')}</span>
+                <Compass className="w-4 h-4 text-cyan-400 shrink-0" />
+                <span className="whitespace-nowrap">{t('nav_guides')}</span>
                 <span className="text-[10px] ml-0.5">▼</span>
               </button>
 
@@ -144,10 +139,10 @@ export default function Navbar() {
                         key={g.path}
                         to={g.path}
                         onClick={() => setGuidesDropdownOpen(false)}
-                        className="flex items-center space-x-2.5 px-4 py-2.5 text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-cyan-300 transition-colors"
+                        className="flex items-center space-x-2.5 px-4 py-2.5 text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-cyan-300 transition-colors whitespace-nowrap"
                       >
-                        <Icon className="w-3.5 h-3.5 text-cyan-400" />
-                        <span>{g.name}</span>
+                        <Icon className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                        <span className="whitespace-nowrap">{g.name}</span>
                       </Link>
                     );
                   })}
@@ -157,19 +152,19 @@ export default function Navbar() {
           </div>
 
           {/* Right Action Icons & User Menu */}
-          <div className="hidden md:flex items-center space-x-3">
+          <div className="hidden md:flex items-center space-x-1.5 xl:space-x-3 shrink-0">
             {/* Bilingual Language Switcher with Links */}
             <LanguageToggle />
 
             {/* Bookmarks Quick Link */}
             <Link
               to="/bookmarks"
-              className="p-2 text-slate-300 hover:text-cyan-400 hover:bg-slate-800 rounded-lg relative transition-colors"
+              className="p-1.5 xl:p-2 text-slate-300 hover:text-cyan-400 hover:bg-slate-800 rounded-lg relative transition-colors shrink-0"
               title={t('nav_savedBookmarks')}
             >
-              <Bookmark className="w-5 h-5" />
+              <Bookmark className="w-4 h-4 xl:w-5 xl:h-5 shrink-0" />
               {bookmarks.length > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-4 h-4 text-[10px] font-bold bg-cyan-500 text-slate-950 rounded-full flex items-center justify-center">
+                <span className="absolute top-1 right-1 xl:top-1.5 xl:right-1.5 w-3.5 h-3.5 xl:w-4 xl:h-4 text-[9px] xl:text-[10px] font-bold bg-cyan-500 text-slate-950 rounded-full flex items-center justify-center">
                   {bookmarks.length}
                 </span>
               )}
@@ -177,15 +172,15 @@ export default function Navbar() {
 
             {/* User State */}
             {user ? (
-              <div className="relative">
+              <div className="relative shrink-0">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-slate-800 text-slate-200 transition-colors border border-slate-700/60"
+                  className="flex items-center space-x-1.5 xl:space-x-2 p-1.5 rounded-lg hover:bg-slate-800 text-slate-200 transition-colors border border-slate-700/60 whitespace-nowrap shrink-0"
                 >
-                  <div className="w-8 h-8 rounded-full bg-cyan-900/50 border border-cyan-500/40 flex items-center justify-center text-cyan-300 font-semibold text-sm">
+                  <div className="w-7 h-7 xl:w-8 xl:h-8 rounded-full bg-cyan-900/50 border border-cyan-500/40 flex items-center justify-center text-cyan-300 font-semibold text-xs xl:text-sm shrink-0">
                     {user.email ? user.email.charAt(0).toUpperCase() : 'U'}
                   </div>
-                  <span className="text-sm font-medium text-slate-200 max-w-[120px] truncate">
+                  <span className="text-xs xl:text-sm font-medium text-slate-200 max-w-[100px] xl:max-w-[120px] truncate whitespace-nowrap">
                     {profile?.full_name || user.email?.split('@')[0] || t('nav_scholar')}
                   </span>
                 </button>
@@ -242,16 +237,16 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1.5 xl:space-x-2 shrink-0">
                 <Link
                   to="/login"
-                  className="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                  className="px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors whitespace-nowrap shrink-0"
                 >
                   {t('nav_logIn')}
                 </Link>
                 <Link
                   to="/signup"
-                  className="px-3.5 py-1.5 rounded-lg text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20 hover:from-cyan-400 hover:to-blue-500 transition-all"
+                  className="px-3 xl:px-3.5 py-1.5 rounded-lg text-xs xl:text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20 hover:from-cyan-400 hover:to-blue-500 transition-all whitespace-nowrap shrink-0"
                 >
                   {t('nav_getStarted')}
                 </Link>
@@ -284,10 +279,10 @@ export default function Navbar() {
                   key={link.path}
                   to={link.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800 hover:text-cyan-400"
+                  className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800 hover:text-cyan-400 whitespace-nowrap overflow-hidden"
                 >
-                  <Icon className="w-4 h-4 text-cyan-400" />
-                  <span>{link.name}</span>
+                  <Icon className="w-4 h-4 text-cyan-400 shrink-0" />
+                  <span className="whitespace-nowrap truncate">{link.name}</span>
                 </NavLink>
               );
             })}
@@ -303,10 +298,10 @@ export default function Navbar() {
                     key={g.path}
                     to={g.path}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs text-slate-300 hover:bg-slate-800 hover:text-cyan-400"
+                    className="flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs text-slate-300 hover:bg-slate-800 hover:text-cyan-400 whitespace-nowrap overflow-hidden"
                   >
-                    <Icon className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>{g.name}</span>
+                    <Icon className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                    <span className="whitespace-nowrap truncate">{g.name}</span>
                   </Link>
                 );
               })}
