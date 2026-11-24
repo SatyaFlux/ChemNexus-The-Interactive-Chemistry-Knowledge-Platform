@@ -247,6 +247,9 @@ ChemNexus   is specifically engineered for simple, error-free deployment to **Ve
 * **Thermodynamic Data:** CRC Handbook of Chemistry and Physics (104th Edition)
 * **Safety Classifications:** Globally Harmonized System of Classification and Labelling of Chemicals (GHS)
 
-#   C h e m N e x u s - T h e - I n t e r a c t i v e - C h e m i s t r y - K n o w l e d g e - P l a t f o r m 
- 
-  SATYA RAM 
+---
+
+## 👨‍💻 Developer & Portfolio
+
+* **Lead Developer:** Satya Ram (Software Engineer)
+* **Portfolio Website:** [https://satyaram-profile.vercel.app](https://satyaram-profile.vercel.app)

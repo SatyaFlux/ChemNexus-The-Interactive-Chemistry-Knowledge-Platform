@@ -1,6 +1,6 @@
 // src/pages/AboutPage.jsx
 import React from 'react';
-import { Atom, ShieldCheck, Database, Cpu, BookOpen, Layers, CheckCircle2, User, Phone } from 'lucide-react';
+import { Atom, ShieldCheck, Database, Cpu, BookOpen, Layers, CheckCircle2, User, Globe, ExternalLink } from 'lucide-react';
 import SEOHead from '@/components/seo/SEOHead';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -148,11 +148,14 @@ export default function AboutPage() {
           </div>
           <div className="shrink-0">
             <a
-              href="tel:6390317539"
-              className="inline-flex items-center space-x-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 hover:text-white px-4 py-2 rounded-xl text-sm font-mono transition-all"
+              href="https://satyaram-profile.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 hover:text-white px-4 py-2 rounded-xl text-sm font-medium transition-all group"
             >
-              <Phone className="w-4 h-4 text-emerald-400" />
-              <span>+91 6390317539</span>
+              <Globe className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+              <span>{isHindi ? 'पोर्टफोलियो वेबसाइट' : 'Portfolio Website'}</span>
+              <ExternalLink className="w-3.5 h-3.5 text-cyan-400/70 group-hover:text-cyan-300" />
             </a>
           </div>
         </div>

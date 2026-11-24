@@ -1,7 +1,7 @@
 // src/components/common/Footer.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Atom, Shield, Sparkles, BookOpen, Compass, FileText, SlidersHorizontal, Box, Phone, User, Code } from 'lucide-react';
+import { Atom, Shield, Sparkles, BookOpen, Compass, FileText, SlidersHorizontal, Box, User, Code, Globe, ExternalLink } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function Footer() {
@@ -147,11 +147,14 @@ export default function Footer() {
                   </span>
                 </p>
                 <a
-                  href="tel:6390317539"
-                  className="flex items-center gap-1.5 text-slate-400 hover:text-cyan-400 transition-colors font-mono text-xs pt-0.5"
+                  href="https://satyaram-profile.vercel.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-slate-400 hover:text-cyan-400 transition-colors text-xs pt-0.5 group"
                 >
-                  <Phone className="w-3 h-3 text-emerald-400 shrink-0" />
-                  <span>+91 6390317539</span>
+                  <Globe className="w-3 h-3 text-cyan-400 shrink-0 group-hover:scale-110 transition-transform" />
+                  <span>{isHindi ? 'पोर्टफोलियो' : 'Portfolio'}</span>
+                  <ExternalLink className="w-2.5 h-2.5 text-slate-500 group-hover:text-cyan-400" />
                 </a>
               </div>
             </div>
@@ -169,9 +172,15 @@ export default function Footer() {
               <strong className="text-slate-200 font-medium">Satya Ram</strong>
               <span className="text-cyan-400 text-[11px]">(Software Engineer)</span>
               <span>•</span>
-              <a href="tel:6390317539" className="hover:text-cyan-400 text-slate-300 font-mono transition-colors flex items-center gap-1">
-                <Phone className="w-3 h-3 text-emerald-400" />
-                <span>6390317539</span>
+              <a
+                href="https://satyaram-profile.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-cyan-400 text-slate-300 transition-colors flex items-center gap-1 group"
+              >
+                <Globe className="w-3 h-3 text-cyan-400" />
+                <span>Portfolio</span>
+                <ExternalLink className="w-2.5 h-2.5 text-slate-500 group-hover:text-cyan-400" />
               </a>
             </div>
           </div>
