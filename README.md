@@ -249,4 +249,4 @@ ChemNexus   is specifically engineered for simple, error-free deployment to **Ve
 
 #   C h e m N e x u s - T h e - I n t e r a c t i v e - C h e m i s t r y - K n o w l e d g e - P l a t f o r m 
  
- 
+  SATYA RAM 
